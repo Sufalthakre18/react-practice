@@ -1,77 +1,83 @@
 *{
   margin: 0;
   padding: 5px;
+  box-sizing: border-box;
+}
+
+.profilelist{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 20px;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: cadetblue;
+  gap: 20px;
 }
 
 .card {
-  width: 320px;
-  background-color: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  overflow: hidden;
-  font-family: Arial, sans-serif;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
-}
-
-/* Heading section */
-.heading {
-  padding: 16px;
-  border-bottom: 1px solid #eee;
-}
-
-.heading h1 {
-  font-size: 1.25rem;
-  margin: 0;
-  color: #333;
-}
-
-.heading h3 {
-  font-size: 0.9rem;
-  margin-top: 4px;
-  color: #777;
-  font-weight: normal;
-}
-
-/* Content section */
-.card > div:nth-child(2) {
+  border: 1px solid black;
+  border-radius: 20px;
+  background-color: beige;
+  color: black;
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
   display: flex;
-  padding: 16px;
-  gap: 12px;
+  justify-content: center;
   align-items: center;
+  flex-direction: column;
+  padding: 10px;
+  
 }
 
-.card p {
-  font-size: 0.9rem;
-  color: #555;
-  line-height: 1.4;
-  margin-bottom: 12px;
+
+.info {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  
+}
+.heading{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  
+}
+.heading span{
+  font-size: small;
 }
 
-/* Button */
-.card button {
-  padding: 8px 14px;
-  border: none;
-  border-radius: 6px;
-  background-color: #4f46e5;
-  color: #fff;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
+.image{
+  border-radius: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  height: 150px;
+  width: 150px;
+  
 }
 
-.card button:hover {
-  background-color: #4338ca;
-}
-
-/* Image */
-.card img {
-  width: 80px;
-  height: 80px;
+img{
   object-fit: cover;
-  border-radius: 8px;
+ 
+}
+
+.skill{
+  display: flex;
+  justify-content: space-around;
+  gap: 5px;
+}
+.skill span{
+  border: 1px solid red;
+  border-radius: 10%;
+  padding-left: 3px;
+  padding-right: 3px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+h1 {
+  font-weight: lighter;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
 }

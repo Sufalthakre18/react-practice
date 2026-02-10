@@ -1,11 +1,11 @@
 import './App.css'
-import Card from './components/Card'
-import cardsData from './assets/data.json'
+import profiles from './assets/profiles'
+import ProfileList from './components/ProfileList'
 function App() {
  
   return (
     <>
-     <Card cardsData={cardsData} />
+     <ProfileList data={profiles}/>
     </>
   )
 }

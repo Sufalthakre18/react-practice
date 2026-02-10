@@ -386,5 +386,6 @@ function User(props) {
 * **Props:** Data passed to components
 * **Functional Components:** Modern React standard
 * **Vite:** Fast modern React setup
+* **Props** props should be pass in {} brackets for other components  
 
 ---
