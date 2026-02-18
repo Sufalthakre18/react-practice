@@ -389,3 +389,569 @@ function User(props) {
 * **Props** props should be pass in {} brackets for other components  
 
 ---
+# ⚛️ Working with Functions in React – Modern Interview Notes
+
+---
+
+## 📌 1️⃣ Functional Components (Modern Standard)
+
+* React components are **JavaScript functions**
+* They return **JSX**
+* This is the modern way of writing React
+
+```jsx
+function Welcome() {
+  return <h1>Hello</h1>;
+}
+```
+
+📌 Functional components replaced most class components.
+
+---
+
+## 📌 2️⃣ Functions as Event Handlers
+
+* Functions handle user interactions
+* Passed as reference (not executed immediately)
+
+```jsx
+function App() {
+  function handleClick() {
+    alert("Clicked");
+  }
+
+  return <button onClick={handleClick}>Click</button>;
+}
+```
+
+📌 Do NOT use `onClick={handleClick()}` unless you want immediate execution.
+
+---
+
+## 📌 3️⃣ Arrow Functions in React
+
+* Common modern syntax
+* Cleaner and shorter
+
+```jsx
+const Button = () => {
+  return <button>Click</button>;
+};
+```
+
+📌 Arrow functions are widely used in modern React projects.
+
+---
+
+## 📌 4️⃣ Passing Functions as Props
+
+* Functions can be passed from parent to child
+* Used for communication (child → parent)
+
+```jsx
+function Parent() {
+  const greet = () => alert("Hello");
+  return <Child onGreet={greet} />;
+}
+
+function Child(props) {
+  return <button onClick={props.onGreet}>Greet</button>;
+}
+```
+
+📌 Very common interview question.
+
+---
+
+## 📌 5️⃣ Functions with Parameters
+
+* Wrap inside arrow function when passing arguments
+
+```jsx
+<button onClick={() => handleUser("Rahul")}>Click</button>
+```
+
+📌 Prevents immediate execution during render.
+
+---
+
+## 📌 6️⃣ useCallback (Performance Optimization)
+
+* Prevents unnecessary function recreation
+* Used in performance-sensitive components
+
+```jsx
+const memoizedFn = useCallback(() => {
+  console.log("Optimized");
+}, []);
+```
+
+📌 Used when passing functions to memoized components.
+
+---
+
+## 📌 7️⃣ Best Practices
+
+* Keep functions small and focused
+* Avoid defining heavy logic directly inside JSX
+* Use arrow functions for cleaner syntax
+* Use useCallback only when necessary
+
+---
+
+## 📝 One-Line Interview Summary
+
+* React components are functions that return JSX.
+* Functions handle events and can be passed as props.
+* Modern React relies heavily on functional programming patterns.
+
+---
+# ⚛️ React Hooks – Complete & Understandable Notes
+
+---
+
+# 📌 What are Hooks?
+
+* Hooks are special functions introduced in React 16.8
+* They allow functional components to use state and lifecycle features
+* Hooks replaced most class component usage
+
+**Interview Line:**
+
+> Hooks allow functional components to manage state and side effects.
+
+---
+
+# 🧠 Why Hooks Were Introduced
+
+* Class components were complex
+* Lifecycle methods were confusing
+* Logic reuse was difficult
+* Hooks simplified component logic
+
+---
+
+# 1️⃣ useState Hook
+
+## What is useState?
+
+* Used to add state to functional components
+* Returns an array: [state, setState]
+
+```jsx
+const [count, setCount] = useState(0);
+```
+
+## How it works:
+
+* `count` → current state value
+* `setCount()` → updates state
+* Updating state triggers re-render
+
+## Important Points
+
+* State updates are asynchronous
+* Never modify state directly
+* Can store numbers, strings, objects, arrays
+
+## Functional Update (Important)
+
+```jsx
+setCount(prev => prev + 1);
+```
+
+Used when new state depends on previous state.
+
+**Interview Line:**
+
+> useState manages local component state and triggers re-render when updated.
+
+---
+
+# 2️⃣ useEffect Hook
+
+## What is useEffect?
+
+* Handles side effects in functional components
+* Replaces lifecycle methods like componentDidMount
+
+```jsx
+useEffect(() => {
+  console.log("Component mounted");
+}, []);
+```
+
+## Dependency Array Cases
+
+### 1. No dependency array
+
+Runs on every render
+
+### 2. Empty array []
+
+Runs once (on mount)
+
+### 3. With dependencies [value]
+
+Runs when value changes
+
+## Cleanup Function
+
+```jsx
+useEffect(() => {
+  const timer = setInterval(() => {}, 1000);
+  return () => clearInterval(timer);
+}, []);
+```
+
+Used to prevent memory leaks.
+
+**Interview Line:**
+
+> useEffect handles side effects like API calls, subscriptions, and timers.
+
+---
+
+# 3️⃣ useContext Hook
+
+## What is useContext?
+
+* Used to access global data without prop drilling
+* Works with Context API
+
+## Steps:
+
+1. Create Context
+2. Wrap with Provider
+3. Use useContext
+
+```jsx
+const value = useContext(MyContext);
+```
+
+## When to use?
+
+* Theme
+* User authentication
+* Global settings
+
+**Interview Line:**
+
+> useContext allows global state sharing without passing props manually.
+
+---
+
+# 4️⃣ useReducer Hook
+
+## What is useReducer?
+
+* Alternative to useState
+* Used for complex state logic
+
+```jsx
+const [state, dispatch] = useReducer(reducer, initialState);
+```
+
+## Reducer Function
+
+```jsx
+function reducer(state, action) {
+  switch(action.type) {
+    case "increment":
+      return { count: state.count + 1 };
+    default:
+      return state;
+  }
+}
+```
+
+## When to Use?
+
+* Multiple state values
+* Complex updates
+* Redux-like pattern
+
+**Interview Line:**
+
+> useReducer manages complex state logic in a predictable way.
+
+---
+
+# 5️⃣ useRef Hook
+
+## What is useRef?
+
+* Used to reference DOM elements
+* Stores mutable values without re-rendering
+
+```jsx
+const inputRef = useRef();
+```
+
+## Use Cases
+
+* Access DOM elements
+* Store previous values
+* Persist values between renders
+
+Important:
+
+* Updating ref does NOT trigger re-render
+
+**Interview Line:**
+
+> useRef stores mutable values and references DOM elements without re-rendering.
+
+---
+
+# 6️⃣ useCallback Hook
+
+## What is useCallback?
+
+* Memoizes a function
+* Prevents unnecessary re-creation
+
+```jsx
+const memoizedFn = useCallback(() => {
+  console.log("Optimized");
+}, []);
+```
+
+## Why use it?
+
+* Prevent unnecessary re-renders
+* Useful when passing functions to child components
+
+Use only when performance optimization is needed.
+
+**Interview Line:**
+
+> useCallback prevents unnecessary function recreation to optimize performance.
+
+---
+
+# 7️⃣ useMemo Hook
+
+## What is useMemo?
+
+* Memoizes computed values
+* Prevents expensive recalculations
+
+```jsx
+const result = useMemo(() => heavyCalculation(data), [data]);
+```
+
+## Why use it?
+
+* Performance optimization
+* Large computations
+
+Important:
+
+* Only use when needed
+
+**Interview Line:**
+
+> useMemo optimizes performance by caching expensive calculations.
+
+---
+
+# 🆚 useCallback vs useMemo (Quick)
+
+| useCallback       | useMemo                 |
+| ----------------- | ----------------------- |
+| Memoizes function | Memoizes value          |
+| Returns function  | Returns computed result |
+
+---
+
+# ⚠️ Common Hook Rules (Very Important)
+
+1. Only call hooks at top level
+2. Only call hooks inside React functions
+3. Do not call inside loops or conditions
+
+---
+
+# 🔑 Hook Order (Basic Flow)
+
+1. useState → Manage state
+2. useEffect → Side effects
+3. useContext → Global state
+4. useReducer → Complex state
+5. useRef → DOM reference
+6. useCallback/useMemo → Optimization
+
+---
+
+# 🎯 Final Interview Summary
+
+* Hooks simplify functional components
+* useState manages state
+* useEffect handles side effects
+* useContext shares global data
+* useReducer handles complex logic
+* useRef stores mutable values
+* useCallback & useMemo optimize performance
+
+---
+# ⚛️ Two-Way Data Binding in React – Complete Notes
+
+---
+
+# 📌 1️⃣ What is Two-Way Data Binding?
+
+Two-way data binding means:
+
+* UI (input field) updates the state
+* State updates the UI
+
+So data flows in **both directions**.
+
+In React, this is achieved using:
+
+* `useState`
+* `value` attribute
+* `onChange` event
+
+⚠️ Important: React does NOT have automatic two-way binding like Angular.
+We implement it manually using controlled components.
+
+---
+
+# 📌 2️⃣ Controlled Components (Core Concept)
+
+A controlled component is an input element whose value is controlled by React state.
+
+### Example:
+
+```jsx
+import { useState } from "react";
+
+function App() {
+  const [name, setName] = useState("");
+
+  return (
+    <input
+      type="text"
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
+  );
+}
+```
+
+Flow:
+
+1. User types in input
+2. onChange fires
+3. State updates
+4. React re-renders
+5. Updated state reflects in input
+
+✔ This is Two-Way Data Binding in React.
+
+---
+
+# 📌 3️⃣ Handling Form Input Changes (Multiple Inputs)
+
+When working with forms, we often manage multiple fields using one state object.
+
+```jsx
+function Form() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  return (
+    <form>
+      <input
+        name="email"
+        value={formData.email}
+        onChange={handleChange}
+      />
+
+      <input
+        name="password"
+        value={formData.password}
+        onChange={handleChange}
+      />
+    </form>
+  );
+}
+```
+
+✔ Best practice for handling multiple inputs.
+
+---
+
+# 📌 4️⃣ Form Submission in React
+
+We use `onSubmit` event and prevent default behavior.
+
+```jsx
+const handleSubmit = (e) => {
+  e.preventDefault();
+  console.log(formData);
+};
+
+<form onSubmit={handleSubmit}>
+  <button type="submit">Submit</button>
+</form>
+```
+
+Why `preventDefault()`?
+
+* Prevents page refresh
+* Keeps React SPA behavior
+
+---
+
+# 📌 5️⃣ Controlled vs Uncontrolled Components
+
+### Controlled
+
+* Uses state
+* Recommended
+* Predictable behavior
+
+### Uncontrolled
+
+* Uses `useRef`
+* DOM manages input value
+* Less preferred
+
+Example (Uncontrolled):
+
+```jsx
+const inputRef = useRef();
+
+<input ref={inputRef} />
+```
+
+---
+
+# 📌 6️⃣ Important Interview Points
+
+* React uses controlled components for two-way binding.
+* Data flows from state → UI and UI → state.
+* onChange is mandatory for controlled inputs.
+* Always use preventDefault() in form submit.
+* Manage multiple inputs using name attribute.
+
+---
+
+# 🧠 One-Line Interview Answer
+
+- "React does not support automatic two-way binding. We implement it manually using controlled components with useState, value, and onChange."
+- "When we use value in an input, we are telling React to control the input using state. That means whatever is stored in the state will be shown inside the input, and whenever the user types, the state updates. So the state becomes the main source of truth, not the DOM. This makes it easy to clear the input, validate it, or use its value anywhere in the component."
+---
