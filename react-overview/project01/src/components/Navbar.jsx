@@ -8,6 +8,7 @@ function Navbar() {
         <ul className='text-black text-xs flex flex-row gap-4 m-2'>
             <li><Link to={'/project1'}>project1</Link></li>
             <li><Link to={'/project2'}>project2</Link></li>
+            <li><Link to={'/project3'}>project3</Link></li>
             
         </ul>
     </div>

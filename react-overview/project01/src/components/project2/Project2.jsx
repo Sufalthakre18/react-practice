@@ -39,6 +39,8 @@ function Project2() {
         e.preventDefault()
         console.log(title);
         setSubmittedTitle(title);
+        console.log("form submitted by ",title);
+        
         setTitle('')
     }
     

@@ -4,6 +4,7 @@ import ProfileList from './components/project1/ProfileList.jsx'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Project2 from './components/project2/Project2';
+import Project3 from './components/project3/Project3.jsx';
 
 
 function App() {
@@ -13,6 +14,7 @@ function App() {
       <Routes>
         <Route path="/project1" element={<ProfileList data={profiles}/>} />
         <Route path="/project2" element={<Project2/>} />
+        <Route path="/project3" element={<Project3/>} />
       </Routes>
     </BrowserRouter>
   );
