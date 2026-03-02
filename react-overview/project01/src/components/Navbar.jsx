@@ -9,6 +9,7 @@ function Navbar() {
             <li><Link to={'/project1'}>project1</Link></li>
             <li><Link to={'/project2'}>project2</Link></li>
             <li><Link to={'/project3'}>project3</Link></li>
+            <li><Link to={'/project4'}>project4</Link></li>
             
         </ul>
     </div>

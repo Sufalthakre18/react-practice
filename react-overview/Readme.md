@@ -574,6 +574,7 @@ Used when new state depends on previous state.
 
 * Handles side effects in functional components
 * Replaces lifecycle methods like componentDidMount
+* componentDidMount is a lifecycle method that runs once after a component is added (mounted) to the screen.
 
 ```jsx
 useEffect(() => {
@@ -954,4 +955,536 @@ const inputRef = useRef();
 
 - "React does not support automatic two-way binding. We implement it manually using controlled components with useState, value, and onChange."
 - "When we use value in an input, we are telling React to control the input using state. That means whatever is stored in the state will be shown inside the input, and whenever the user types, the state updates. So the state becomes the main source of truth, not the DOM. This makes it easy to clear the input, validate it, or use its value anywhere in the component."
+
+- Client side means the code runs in the browser and handles things like clicks, input, and state using hooks like useState. Server side means the code runs on the server and sends ready-made HTML to the browser for fast loading. In Next.js, we use "use client" when a component needs browser features like state or event handlers. Hydration is the process where React connects to the server-rendered HTML in the browser. A hydration error happens when the HTML generated on the server is different from what React generates in the browser.
 ---
+
+
+# 💾 Local Storage & Session Storage – Complete Notes (React)
+
+---
+
+# 📌 1️⃣ What is Web Storage?
+
+Web Storage allows us to store data in the browser.
+
+There are two types:
+
+1. **localStorage** → Persistent storage (does not expire)
+2. **sessionStorage** → Temporary storage (cleared when tab closes)
+
+Both store data in **key-value pair format**.
+
+---
+
+# 📌 2️⃣ localStorage vs sessionStorage
+
+| Feature       | localStorage            | sessionStorage      |
+| ------------- | ----------------------- | ------------------- |
+| Expiry        | No expiry               | Clears on tab close |
+| Storage limit | ~5MB                    | ~5MB                |
+| Scope         | All tabs (same origin)  | Only current tab    |
+| Use case      | Auth token, theme, cart | Temporary form data |
+
+---
+
+# 📌 3️⃣ Important Methods
+
+## ✅ 1. setItem()
+
+Stores data in storage.
+
+```js
+localStorage.setItem("name", "Rahul");
+sessionStorage.setItem("age", "22");
+```
+
+---
+
+## ✅ 2. getItem()
+
+Retrieves stored data.
+
+```js
+const name = localStorage.getItem("name");
+console.log(name);
+```
+
+---
+
+## ✅ 3. removeItem()
+
+Removes specific key.
+
+```js
+localStorage.removeItem("name");
+```
+
+---
+
+## ✅ 4. clear()
+
+Removes all data.
+
+```js
+localStorage.clear();
+```
+
+---
+
+# 📌 4️⃣ Important: JSON.stringify() & JSON.parse()
+
+⚠️ Storage only stores **strings**.
+If we store objects/arrays, we must convert them.
+
+---
+
+## 🔹 Storing Object Example
+
+```js
+const user = {
+  name: "Rahul",
+  age: 22,
+};
+
+localStorage.setItem("user", JSON.stringify(user));
+```
+
+---
+
+## 🔹 Retrieving Object Example
+
+```js
+const storedUser = JSON.parse(localStorage.getItem("user"));
+console.log(storedUser.name);
+```
+
+✔ stringify → converts object to string
+✔ parse → converts string back to object
+
+---
+
+# 📌 5️⃣ Using localStorage in React (Practical Example)
+
+```jsx
+import { useState, useEffect } from "react";
+
+function App() {
+  const [name, setName] = useState(
+    localStorage.getItem("name") || ""
+  );
+
+  useEffect(() => {
+    localStorage.setItem("name", name);
+  }, [name]);
+
+  return (
+    <input
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
+  );
+}
+```
+
+✔ Persists data even after refresh.
+
+---
+
+# 📌 6️⃣ When to Use?
+
+Use localStorage for:
+
+* Theme preference
+* Auth token (with caution)
+* Cart data
+
+Use sessionStorage for:
+
+* Temporary form data
+* OTP verification flow
+
+---
+
+# 📌 7️⃣ Interview Important Points
+
+* Web Storage stores data as strings.
+* Use JSON.stringify() before storing objects.
+* Use JSON.parse() after retrieving.
+* localStorage persists even after browser restart.
+* sessionStorage clears when tab closes.
+* Not suitable for sensitive data.
+
+---
+
+# 🧠 One-Line Interview Answer
+
+"localStorage and sessionStorage are browser storage mechanisms that store key-value string data. localStorage persists permanently, while sessionStorage lasts only for a session."
+
+---
+# 🌐 API Calls in Frontend – Complete Guide (Fetch & Axios)
+
+---
+
+# 📌 1️⃣ What is an API Call?
+
+API (Application Programming Interface) allows frontend to communicate with backend.
+
+Frontend sends request → Server processes → Server sends response → UI updates.
+
+Common HTTP Methods:
+
+* GET → Fetch data
+* POST → Create data
+* PUT → Update data
+* PATCH → Partial update
+* DELETE → Remove data
+
+---
+
+# 📌 2️⃣ Using Fetch (Quick Overview)
+
+Fetch is a built-in browser API.
+
+## 🔹 GET Request
+
+```js
+fetch("https://api.example.com/users")
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => console.log(err));
+```
+
+⚠️ Fetch does NOT reject on HTTP errors (like 404, 500).
+You must manually check `res.ok`.
+
+---
+
+## 🔹 POST Request
+
+```js
+fetch("https://api.example.com/users", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({ name: "Rahul" })
+});
+```
+
+---
+
+# 📌 3️⃣ Why Axios is Preferred (Important)
+
+Axios is a third-party HTTP client library.
+
+Advantages over Fetch:
+
+* Automatically parses JSON
+* Automatically rejects on HTTP errors
+* Cleaner syntax
+* Built-in timeout support
+* Request & response interceptors
+* Base URL configuration
+* Works in browser & Node.js
+
+👉 In real-world projects, Axios is commonly used.
+
+---
+
+# 📌 4️⃣ Installing Axios
+
+```bash
+npm install axios
+```
+
+Import:
+
+```js
+import axios from "axios";
+```
+
+---
+
+# 📌 5️⃣ Axios Basic Requests
+
+## 🔹 GET Request
+
+```js
+axios.get("https://api.example.com/users")
+  .then(response => {
+    console.log(response.data);
+  })
+  .catch(error => {
+    console.log(error);
+  });
+```
+
+✔ Response data is directly inside `response.data`
+
+---
+
+## 🔹 POST Request
+
+```js
+axios.post("https://api.example.com/users", {
+  name: "Rahul"
+});
+```
+
+---
+
+## 🔹 PUT Request
+
+```js
+axios.put("https://api.example.com/users/1", {
+  name: "Updated Name"
+});
+```
+
+---
+
+## 🔹 DELETE Request
+
+```js
+axios.delete("https://api.example.com/users/1");
+```
+
+---
+
+# 📌 6️⃣ Axios with async/await (Modern Way)
+
+```js
+const fetchUsers = async () => {
+  try {
+    const response = await axios.get("https://api.example.com/users");
+    console.log(response.data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+```
+
+✔ Preferred in modern React apps.
+
+---
+
+# 📌 7️⃣ Using Axios in React with useEffect
+
+```jsx
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+function App() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await axios.get("https://api.example.com/users");
+        setUsers(res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  return <div>{users.length}</div>;
+}
+```
+
+---
+
+# 📌 8️⃣ Axios Config Object
+
+Axios allows configuration:
+
+```js
+axios({
+  method: "get",
+  url: "https://api.example.com/users",
+  headers: {
+    Authorization: "Bearer token"
+  },
+  timeout: 5000
+});
+```
+
+Important Config Options:
+
+* baseURL
+* headers
+* params
+* timeout
+* withCredentials
+
+---
+
+# 📌 9️⃣ Creating Axios Instance (Professional Way)
+
+Used in large projects.
+
+```js
+const api = axios.create({
+  baseURL: "https://api.example.com",
+  timeout: 5000,
+  headers: {
+    "Content-Type": "application/json"
+  }
+});
+
+export default api;
+```
+
+Usage:
+
+```js
+api.get("/users");
+```
+
+✔ Cleaner and reusable.
+
+---
+
+# 📌 🔟 Axios Interceptors (Very Important)
+
+Interceptors allow modifying request/response globally.
+
+## 🔹 Request Interceptor
+
+```js
+api.interceptors.request.use(config => {
+  config.headers.Authorization = "Bearer token";
+  return config;
+});
+```
+
+```js
+import axios from "axios";
+
+const api = axios.create({
+  baseURL: "https://api.example.com"
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
+});
+```
+
+## 🔹 Response Interceptor
+
+
+```js
+api.interceptors.response.use(
+  (response) => {
+    return response;
+  },
+  (error) => {
+    if (error.response.status === 401) {
+      console.log("Unauthorized! Redirect to login");
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+✔ Used for authentication & global error handling.
+
+---
+
+# 📌 1️⃣1️⃣ Handling Errors in Axios
+
+Axios provides detailed error object:
+
+```js
+try {
+  await axios.get("wrong-url");
+} catch (error) {
+  console.log(error.response); // server response
+  console.log(error.request);  // request made
+  console.log(error.message);  // error message
+}
+```
+
+---
+
+# 📌 1️⃣2️⃣ Sending Query Parameters
+
+```js
+axios.get("/users", {
+  params: {
+    page: 1,
+    limit: 10
+  }
+});
+```
+
+---
+
+# 📌 1️⃣3️⃣ Sending Headers
+
+```js
+axios.get("/users", {
+  headers: {
+    Authorization: "Bearer token"
+  }
+});
+```
+
+---
+
+# 📌 1️⃣4️⃣ Canceling Requests
+
+Useful in search or fast switching.
+
+```js
+const controller = new AbortController();
+
+axios.get("/users", {
+  signal: controller.signal
+});
+
+controller.abort();
+```
+
+---
+
+# 📌 1️⃣5️⃣ Fetch vs Axios (Interview Table)
+
+| Feature           | Fetch    | Axios     |
+| ----------------- | -------- | --------- |
+| Built-in          | Yes      | No        |
+| Auto JSON parsing | No       | Yes       |
+| Error handling    | Manual   | Automatic |
+| Interceptors      | No       | Yes       |
+| Timeout           | No       | Yes       |
+| Cleaner syntax    | Moderate | Yes       |
+
+---
+
+# 📌 1️⃣6️⃣ Best Practices for API Calls in React
+
+* Always use async/await
+* Use try/catch
+* Create Axios instance
+* Use interceptors for auth
+* Keep API logic separate (services folder)
+* Handle loading & error states
+* Avoid calling API directly inside JSX
+
+---
+
+# 🧠 One-Line Interview Answer
+
+"Axios is a promise-based HTTP client that simplifies API calls with automatic JSON parsing, better error handling, interceptors, and configuration support, making it preferred over Fetch in large-scale applications."
+
+---
+
