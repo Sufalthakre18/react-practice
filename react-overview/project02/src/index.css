@@ -1,0 +1,94 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    color: white;
+    font-family: 'helvetica neue';
+}
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+body{
+    background-color: black;
+}
+
+h1{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: 100px;
+    white-space: nowrap;
+    text-decoration: underline;
+}
+
+.nav{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 40px;
+    background-color: rgb(10, 117, 146);
+}
+
+.nav div{
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    background-color: slategray;
+}
+
+.product-nav {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  align-items: center;
+}
+
+.product-link {
+  margin: 0 12px;
+  font-family: monospace;
+  font-size: 18px;
+  text-decoration: none;
+  color: #475569;
+  transition: 0.3s;
+}
+
+.product-link:hover {
+  color: #2563eb;
+}
+
+.navbar2 {
+  padding: 10px 20px;
+  background-color: #0e7490;
+  display: flex;
+  gap: 10px;
+}
+
+.nav-btn {
+  font-weight: 500;
+  background-color: #f59e0b;
+  padding: 8px 18px;
+  border-radius: 6px;
+  border: none;
+  margin: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nav-btn:hover {
+  background-color: #d97706;
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+}
+
+.navbar2.dark {
+  background-color: #0e7490;
+}
+
+.navbar2.light {
+  background-color: #e5e7eb;
+}

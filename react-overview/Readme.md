@@ -1488,3 +1488,702 @@ controller.abort();
 
 ---
 
+# 🚦 React Router DOM – Complete & Advanced Notes
+
+---
+
+# 📌 1️⃣ What is React Router?
+
+React Router is a library used for client-side routing in React applications.
+
+It allows navigation between components without page reload (SPA behavior).
+
+---
+
+# 📌 2️⃣ Installation (V6+)
+
+```bash
+npm install react-router-dom
+```
+
+Import:
+
+```js
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+```
+
+---
+
+# 📌 3️⃣ Basic Setup
+
+```jsx
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Home from "./Home";
+import About from "./About";
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}
+```
+
+✔ `BrowserRouter` → wraps app
+✔ `Routes` → container for routes
+✔ `Route` → defines path & component
+✔ `element` → JSX component
+
+---
+
+# 📌 4️⃣ Navigation
+
+## 🔹 Link (No Page Reload)
+
+```jsx
+import { Link } from "react-router-dom";
+
+<Link to="/about">Go to About</Link>
+```
+
+## 🔹 useNavigate (Programmatic Navigation)
+
+```jsx
+import { useNavigate } from "react-router-dom";
+
+const navigate = useNavigate();
+
+navigate("/about");
+navigate(-1); // go back
+```
+
+---
+
+# 📌 5️⃣ Route Parameters (Dynamic Routing)
+
+```jsx
+<Route path="/user/:id" element={<User />} />
+```
+
+Access param:
+
+```jsx
+import { useParams } from "react-router-dom";
+
+const { id } = useParams();
+```
+
+✔ Used in product details, profile pages.
+
+---
+
+# 📌 6️⃣ Nested Routing (Important)
+
+```jsx
+<Route path="/dashboard" element={<Dashboard />}>
+  <Route path="profile" element={<Profile />} />
+  <Route path="settings" element={<Settings />} />
+</Route>
+```
+
+Inside Dashboard component:
+
+```jsx
+import { Outlet } from "react-router-dom";
+
+<Outlet />
+```
+
+✔ `Outlet` renders child routes.
+
+---
+
+# 📌 7️⃣ 404 Page (Wildcard Route)
+
+```jsx
+<Route path="*" element={<NotFound />} />
+```
+
+✔ Must be last route.
+
+---
+
+# 📌 8️⃣ Protected Routes (Authentication)
+
+Create wrapper:
+
+```jsx
+import { Navigate } from "react-router-dom";
+
+function ProtectedRoute({ children }) {
+  const isAuth = localStorage.getItem("token");
+
+  if (!isAuth) {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
+}
+```
+
+Usage:
+
+```jsx
+<Route
+  path="/dashboard"
+  element={
+    <ProtectedRoute>
+      <Dashboard />
+    </ProtectedRoute>
+  }
+/>
+```
+
+✔ Prevents unauthorized access.
+
+---
+
+# 📌 9️⃣ Query Parameters
+
+URL:
+
+```
+/products?page=1&limit=10
+```
+
+Access:
+
+```jsx
+import { useSearchParams } from "react-router-dom";
+
+const [searchParams] = useSearchParams();
+
+const page = searchParams.get("page");
+```
+
+✔ Used for filters & pagination.
+
+---
+
+# 📌 🔟 Lazy Loading Routes (Performance)
+
+```jsx
+import { lazy, Suspense } from "react";
+
+const About = lazy(() => import("./About"));
+
+<Suspense fallback={<p>Loading...</p>}>
+  <About />
+</Suspense>
+```
+
+✔ Reduces bundle size.
+
+---
+
+# 📌 1️⃣1️⃣ useLocation Hook
+
+```jsx
+import { useLocation } from "react-router-dom";
+
+const location = useLocation();
+console.log(location.pathname);
+```
+
+✔ Useful for active menu highlighting.
+
+---
+
+# 📌 1️⃣2️⃣ useMatch (Advanced Matching)
+
+Used to check if route matches pattern.
+
+```jsx
+import { useMatch } from "react-router-dom";
+
+const match = useMatch("/users/:id");
+```
+
+---
+
+# 📌 1️⃣3️⃣ Relative vs Absolute Paths
+
+Absolute: `/about`
+Relative: `profile`
+
+✔ Nested routes prefer relative paths.
+
+---
+
+# 📌 1️⃣4️⃣ Important Edge Cases
+
+1. Always wrap app in `BrowserRouter` once.
+2. `Route` must be inside `Routes`.
+3. Wildcard `*` should be last.
+4. Do not use `<a>` tag for navigation (causes reload).
+5. Protected route should return `Navigate`, not `navigate()`.
+6. Dynamic routes must match exact param names.
+7. For nested routes, parent must render `Outlet`.
+8. Handle loading states in lazy routes.
+9. Use `key` prop if forcing re-render on same route.
+10. Clean up side effects when route changes.
+
+---
+
+# 📌 1️⃣5️⃣ BrowserRouter vs HashRouter
+
+| Feature        | BrowserRouter      | HashRouter      |
+| -------------- | ------------------ | --------------- |
+| URL            | Clean              | Uses #          |
+| SEO            | Better             | Not ideal       |
+| Hosting config | Needs server setup | No setup needed |
+
+✔ Use BrowserRouter in most cases.
+
+---
+
+# 📌 1️⃣6️⃣ Best Practices (Industry Level)
+
+* Keep routes in separate file (routes.js)
+* Use layout components
+* Use lazy loading for large apps
+* Use protected route wrapper
+* Keep API calls separate from routing logic
+* Use constants for route paths
+
+---
+
+# 🧠 One-Line Interview Answer
+
+"React Router DOM enables client-side routing in React applications by mapping URL paths to components without reloading the page."
+
+---
+# React: Sending Data from Child to Parent
+
+## Core Idea
+
+React follows **one-way data flow (Parent → Child)**. A child component cannot directly modify the parent's state.
+
+To send data **from Child → Parent**, we use a **callback function passed as a prop**.
+
+---
+
+## Steps
+
+1. Parent creates a function.
+2. Parent passes the function to the child as a prop.
+3. Child calls that function.
+4. Child sends data as an argument.
+5. Parent receives the data and updates its state.
+
+---
+
+## Basic Pattern
+
+### Parent
+
+```jsx
+const receiveData = (data) => {
+  setState(data)
+}
+
+<Child sendData={receiveData} />
+```
+
+### Child
+
+```jsx
+function Child({ sendData }) {
+  return (
+    <button onClick={() => sendData("Hello Parent")}>Send</button>
+  )
+}
+```
+
+---
+
+## Flow
+
+Parent → passes function → Child
+Child → calls function with data → Parent updates state
+
+---
+
+## Key Points
+
+* React uses **unidirectional data flow**.
+* Parent sends data using **props**.
+* Child sends data back using a **callback function**.
+* Parent owns and controls the **state**.
+* Child only **triggers the update**.
+
+---
+
+## One-Line Interview Answer
+
+"To send data from a child to a parent in React, pass a callback function from the parent as a prop and call it inside the child with the required data."
+
+---
+
+# React: API Calls & Context (Quick Notes)
+
+## Where API Calls Go
+
+* Usually in **services/api.js**.
+* Components call functions from the service file.
+
+Example:
+
+```js
+getProducts()
+createProduct(data)
+```
+
+---
+
+## Role of Context API
+
+* Context is used to **share global state across components**.
+* It does **NOT replace API calls**.
+
+Typical global data:
+
+* user authentication
+* theme (dark/light)
+* cart items
+
+---
+
+## Common Production Flow
+
+```
+Component → Context → Service(API) → Backend
+                         ↓
+                      Response
+                         ↓
+                   Context State
+                         ↓
+                        UI
+```
+
+---
+
+## Auth Example Pattern
+
+1. Component calls `login()`.
+2. `login()` function is inside **AuthContext**.
+3. AuthContext calls API from **services/api.js**.
+4. Response (user/token) saved in context state.
+5. All components can access the user.
+
+---
+
+## Folder Structure (Typical)
+
+```
+src
+ ├── components
+ ├── pages
+ ├── context
+ │     └── AuthContext.js
+ ├── services
+ │     └── api.js
+ └── App.js
+```
+
+---
+
+## Golden Rule
+
+* **API logic → services folder**
+* **Global state → Context**
+* **UI interaction → Components**
+
+
+# 🌍 React Context API – Complete Interview Notes
+
+---
+
+# 📌 1️⃣ What is Context API?
+
+The **Context API** is a built‑in React feature used to share data globally between components **without passing props manually at every level**.
+
+This problem is called **Prop Drilling**.
+
+### Example of Prop Drilling
+
+App → Parent → Child → GrandChild
+
+If `GrandChild` needs data from `App`, we normally pass props through all intermediate components.
+
+Context API removes this problem.
+
+---
+
+# 📌 2️⃣ When Should We Use Context?
+
+Use Context when data is needed by **many components at different levels**.
+
+Common use cases:
+
+* Authentication (user info)
+* Theme (dark/light)
+* Language settings
+* Global app configuration
+* Shopping cart
+
+⚠️ Avoid using context for frequently changing data in large apps.
+
+---
+
+# 📌 3️⃣ Core Concept
+
+Context API has **three main parts**:
+
+1. `createContext()` → Create context
+2. `Provider` → Provide data
+3. `useContext()` → Consume data
+
+---
+
+# 📌 4️⃣ Step 1: Create Context
+
+```jsx
+import { createContext } from "react";
+
+export const UserContext = createContext();
+```
+
+This creates a global context object.
+
+---
+
+# 📌 5️⃣ Step 2: Provide Context Data
+
+The **Provider** makes data available to all child components.
+
+```jsx
+import { UserContext } from "./UserContext";
+
+function App() {
+  const user = "Rahul";
+
+  return (
+    <UserContext.Provider value={user}>
+      <Dashboard />
+    </UserContext.Provider>
+  );
+}
+```
+
+All components inside `Provider` can access the data.
+
+---
+
+# 📌 6️⃣ Step 3: Consume Context
+
+Use `useContext` hook.
+
+```jsx
+import { useContext } from "react";
+import { UserContext } from "./UserContext";
+
+function Profile() {
+  const user = useContext(UserContext);
+
+  return <h1>{user}</h1>;
+}
+```
+
+Now `Profile` can access `user` directly.
+
+---
+
+# 📌 7️⃣ Full Example
+
+### Create Context
+
+```jsx
+import { createContext } from "react";
+
+export const ThemeContext = createContext();
+```
+
+### Provide Context
+
+```jsx
+function App() {
+  const theme = "dark";
+
+  return (
+    <ThemeContext.Provider value={theme}>
+      <Home />
+    </ThemeContext.Provider>
+  );
+}
+```
+
+### Consume Context
+
+```jsx
+function Home() {
+  const theme = useContext(ThemeContext);
+
+  return <div>Theme: {theme}</div>;
+}
+```
+
+---
+
+# 📌 8️⃣ Passing Objects in Context
+
+Usually we pass **objects or functions**.
+
+```jsx
+const userData = {
+  name: "Rahul",
+  age: 22
+};
+
+<UserContext.Provider value={userData}>
+```
+
+Access:
+
+```jsx
+const { name } = useContext(UserContext);
+```
+
+---
+
+# 📌 9️⃣ Updating Context Data
+
+Context often works with `useState`.
+
+```jsx
+function App() {
+  const [theme, setTheme] = useState("light");
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <Home />
+    </ThemeContext.Provider>
+  );
+}
+```
+
+Use in child:
+
+```jsx
+const { theme, setTheme } = useContext(ThemeContext);
+
+setTheme("dark");
+```
+
+---
+
+# 📌 🔟 Folder Structure (Best Practice)
+
+```
+src
+ ├── context
+ │    └── AuthContext.js
+ ├── components
+ ├── pages
+ └── App.jsx
+```
+
+Example context file:
+
+```jsx
+import { createContext } from "react";
+
+export const AuthContext = createContext();
+```
+
+---
+
+# 📌 1️⃣1️⃣ Custom Context Hook (Professional Pattern)
+
+Large projects create custom hooks.
+
+```jsx
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
+```
+
+Usage:
+
+```jsx
+const user = useAuth();
+```
+
+This improves code readability.
+
+---
+
+# 📌 1️⃣2️⃣ Context vs Redux
+
+| Feature          | Context API         | Redux                 |
+| ---------------- | ------------------- | --------------------- |
+| Built into React | Yes                 | No                    |
+| Setup complexity | Simple              | Complex               |
+| Performance      | Good for small apps | Better for large apps |
+| State management | Basic               | Advanced              |
+
+✔ Context is good for small‑medium global state.
+
+---
+
+# 📌 1️⃣3️⃣ Performance Considerations
+
+Problem:
+
+When context value changes → **all consuming components re-render**.
+
+Solutions:
+
+* Split contexts
+* Memoize values
+* Use Redux/Zustand for large apps
+
+Example:
+
+```jsx
+const value = useMemo(() => ({ theme, setTheme }), [theme]);
+```
+
+---
+
+# 📌 1️⃣4️⃣ Common Mistakes
+
+❌ Forgetting Provider
+
+❌ Using context for frequently changing data
+
+❌ Large context objects
+
+❌ Overusing context instead of proper state management
+
+---
+
+# 📌 1️⃣5️⃣ Context API Workflow
+
+1. Create context
+2. Wrap app with Provider
+3. Pass value to Provider
+4. Consume using useContext
+5. Update value if needed
+
+---
+
+# 🧠 Interview Answer
+
+"The React Context API is used to manage global data and avoid prop drilling by providing a way to share values between components without passing props manually through every level."
+
+---
