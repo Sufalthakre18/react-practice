@@ -1,16 +1,116 @@
-# React + Vite
+# Assignment: Mini E-commerce Store (Context API Practice)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Objective
 
-Currently, two official plugins are available:
+Build a Mini E-commerce Store using React (Vite) to practice Context API for global state management.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Contexts to Implement
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 1. AuthContext
 
-## Expanding the ESLint configuration
+Manage authentication globally.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Features:
+
+* Login user
+* Logout user
+* Store user data
+* Show login status in Navbar
+
+---
+
+### 2. CartContext
+
+Manage shopping cart globally.
+
+Features:
+
+* Add product to cart
+* Remove product from cart
+* Show cart items
+* Calculate total price
+* Show cart count in Navbar
+
+---
+
+### 3. ThemeContext
+
+Manage application theme.
+
+Features:
+
+* Dark mode
+* Light mode
+* Toggle theme from Navbar
+* Apply theme globally
+
+---
+
+## API
+
+Use this API to fetch products:
+
+[https://fakestoreapi.com/products](https://fakestoreapi.com/products)
+
+---
+
+## Pages to Build
+
+1. Home Page
+
+* Fetch products from API
+* Display product list
+* Add products to cart
+
+2. Product Details Page
+
+* Show full product information
+* Add to cart
+
+3. Cart Page
+
+* Show cart items
+* Remove items
+* Show total price
+
+4. Login Page
+
+* Simulate login
+* Update AuthContext
+
+---
+
+## Suggested Folder Structure
+
+src
+├── components
+├── pages
+├── context
+│     ├── AuthContext.jsx
+│     ├── CartContext.jsx
+│     └── ThemeContext.jsx
+├── services
+│     └── api.js
+├── App.jsx
+└── main.jsx
+
+---
+
+## Learning Outcomes
+
+* Understand Context API for global state
+* Share data between multiple components
+* Use multiple context providers
+* Combine API data with global state
+* Follow a clean React project structure
+
+---
+
+## Bonus (Optional)
+
+* Persist cart using localStorage
+* Protected routes
+* Product search
+* Loading states for API calls
