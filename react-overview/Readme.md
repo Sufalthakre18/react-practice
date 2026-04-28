@@ -214,7 +214,7 @@ import Header from './Header';
 * Lightweight **copy of Real DOM**
 * Exists in **memory**
 * Updates are **fast**
-* React compares changes using **diffing**
+* React compares changes using **diffing** (A process used by libraries like React to compare a new virtual DOM tree with an old one to calculate the minimum number of changes needed to update the user interface (reconciliation).)
 * Updates only the changed part in Real DOM
 
 ### Why Virtual DOM is Faster?
