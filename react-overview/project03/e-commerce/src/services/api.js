@@ -65,3 +65,5 @@ export const getProductDetail = async (id) => {
     console.log('Product detail not fetched ❌', error)
   }
 }
+
+
