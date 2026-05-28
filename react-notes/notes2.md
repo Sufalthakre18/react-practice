@@ -456,10 +456,599 @@ Possible, but not recommended for dynamic lists.
 
 ---
 
-# 10) Important Interview Points
+# React Responding to Events — Complete Interview Notes
 
-* Lists are rendered using `.map()`
-* Keys are essential
-* Prefer unique IDs
-* Avoid index as key for dynamic lists
-* Keys improve reconciliation performance
+---
+
+# 1) What are Events in React?
+
+Events are user interactions that happen in the browser.
+
+Examples:
+
+* button click
+* typing in input
+* form submit
+* mouse hover
+* keyboard press
+
+React handles events using event handlers.
+
+---
+
+# 2) Basic Event Handling
+
+```jsx
+function App() {
+  const handleClick = () => {
+    alert('Button Clicked');
+  }
+
+  return (
+    <button onClick={handleClick}>
+      Click Me
+    </button>
+  );
+}
+```
+
+---
+
+# 3) React Event Naming
+
+React uses camelCase event names.
+
+| HTML        | React       |
+| ----------- | ----------- |
+| onclick     | onClick     |
+| onchange    | onChange    |
+| onsubmit    | onSubmit    |
+| onmouseover | onMouseOver |
+
+---
+
+# 4) Passing Functions to Events
+
+Correct:
+
+```jsx
+<button onClick={handleClick}>Click</button>
+```
+
+Wrong:
+
+```jsx
+<button onClick={handleClick()}>Click</button>
+```
+
+### Why wrong?
+
+Because function executes immediately during rendering.
+
+---
+
+# 5) Inline Event Functions
+
+```jsx
+<button onClick={() => alert('Hello')}>
+  Click
+</button>
+```
+
+---
+
+# 6) Passing Arguments in Events
+
+```jsx
+function App() {
+  const greet = (name) => {
+    alert(`Hello ${name}`);
+  }
+
+  return (
+    <button onClick={() => greet('Rahul')}>
+      Greet
+    </button>
+  );
+}
+```
+
+---
+
+# 7) Event Object
+
+React automatically passes an event object.
+
+```jsx
+function App() {
+  const handleClick = (event) => {
+    console.log(event);
+  }
+
+  return <button onClick={handleClick}>Click</button>
+}
+```
+
+---
+
+# 8) Prevent Default Behavior
+
+Used mainly in forms.
+
+```jsx
+function App() {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Form Submitted');
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+---
+
+# 9) Common React Events
+
+| Event       | Description       |
+| ----------- | ----------------- |
+| onClick     | Mouse click       |
+| onChange    | Input change      |
+| onSubmit    | Form submit       |
+| onMouseOver | Mouse hover       |
+| onKeyDown   | Key pressed       |
+| onFocus     | Input focused     |
+| onBlur      | Input loses focus |
+
+---
+
+# 10) Event Bubbling in React
+
+Events bubble upward in React similar to JavaScript DOM.
+
+```jsx
+<div onClick={() => console.log('Parent')}>
+  <button onClick={() => console.log('Child')}>
+    Click
+  </button>
+</div>
+```
+
+Output:
+
+```text
+Child
+Parent
+```
+
+---
+
+# 11) stopPropagation()
+
+Stops event bubbling.
+
+```jsx
+function App() {
+  const handleChild = (e) => {
+    e.stopPropagation();
+    console.log('Child');
+  }
+
+  return (
+    <div onClick={() => console.log('Parent')}>
+      <button onClick={handleChild}>Click</button>
+    </div>
+  )
+}
+```
+
+---
+
+# 12) Synthetic Events
+
+React wraps browser events inside Synthetic Events.
+
+### Benefits
+
+* cross-browser compatibility
+* consistent behavior
+* improved performance
+
+---
+
+# 13) Important Interview Points
+
+* React events use camelCase
+* Event handlers receive functions
+* Synthetic events provide consistency
+* `preventDefault()` prevents default browser behavior
+* `stopPropagation()` stops bubbling
+
+# React State — Complete Interview Notes
+
+---
+
+# 1) What is State in React?
+
+State is data managed inside a component.
+
+When state changes, React re-renders the component.
+
+### State makes UI dynamic.
+
+Examples:
+
+* counters
+* forms
+* toggles
+* API data
+* user interactions
+
+---
+
+# 2) useState Hook
+
+React state in functional components is managed using `useState`.
+
+## Syntax
+
+```jsx
+const [state, setState] = useState(initialValue)
+```
+
+---
+
+# 3) Basic Counter Example
+
+```jsx
+import { useState } from 'react';
+
+function Counter() {
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <h1>{count}</h1>
+
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
+# 4) Understanding useState
+
+```jsx
+const [count, setCount] = useState(0)
+```
+
+## Breakdown
+
+| Part     | Meaning               |
+| -------- | --------------------- |
+| count    | current state value   |
+| setCount | state update function |
+| 0        | initial value         |
+
+---
+
+# 5) State Updates Cause Re-render
+
+Whenever state changes:
+
+```text
+React re-renders the component
+```
+
+Example:
+
+```jsx
+setCount(count + 1)
+```
+
+---
+
+# 6) State is Private
+
+State belongs to the component where it is created.
+
+Other components cannot directly access it.
+
+---
+
+# 7) Updating State Correctly
+
+❌ Wrong
+
+```jsx
+count = count + 1
+```
+
+❌ Wrong
+
+```jsx
+count++
+```
+
+✅ Correct
+
+```jsx
+setCount(count + 1)
+```
+
+---
+
+# 8) Functional Updates
+
+Used when next state depends on previous state.
+
+```jsx
+setCount(prevCount => prevCount + 1)
+```
+
+### Why preferred?
+
+Avoids stale state issues.
+
+---
+
+# 9) State with Strings
+
+```jsx
+const [name, setName] = useState('Rahul');
+```
+
+---
+
+# 10) State with Boolean
+
+```jsx
+const [isOpen, setIsOpen] = useState(false);
+```
+
+Toggle example:
+
+```jsx
+setIsOpen(!isOpen)
+```
+
+---
+
+# 11) State with Arrays
+
+```jsx
+const [items, setItems] = useState([]);
+```
+
+Adding item:
+
+```jsx
+setItems([...items, newItem])
+```
+
+---
+
+# 12) State with Objects
+
+```jsx
+const [user, setUser] = useState({
+  name: 'Rahul',
+  age: 22
+});
+```
+
+Updating object:
+
+```jsx
+setUser({
+  ...user,
+  age: 23
+})
+```
+
+---
+
+# 13) Why We Use Spread Operator
+
+State should not be mutated directly.
+
+❌ Wrong
+
+```jsx
+user.age = 23
+```
+
+✅ Correct
+
+```jsx
+setUser({ ...user, age: 23 })
+```
+
+---
+
+# 14) Multiple State Variables
+
+```jsx
+const [name, setName] = useState('');
+const [email, setEmail] = useState('');
+const [loading, setLoading] = useState(false);
+```
+
+---
+
+# 15) Asynchronous State Updates
+
+State updates are asynchronous.
+
+```jsx
+setCount(count + 1);
+console.log(count);
+```
+
+Console may show old value.
+
+---
+
+# 16) Batching in React
+
+React groups multiple state updates together for performance.
+
+---
+
+# 17) Lifting State Up
+
+Moving shared state to a common parent component.
+
+### Why?
+
+To share data between sibling components.
+
+---
+
+# 18) Controlled Components
+
+Inputs controlled using React state.
+
+```jsx
+function Form() {
+  const [name, setName] = useState('');
+
+  return (
+    <input
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
+  );
+}
+```
+
+---
+
+# 19) State vs Props
+
+| State                | Props            |
+| -------------------- | ---------------- |
+| Internal data        | External data    |
+| Mutable              | Read-only        |
+| Managed by component | Passed by parent |
+| Dynamic              | Configurable     |
+
+---
+
+# 20) Common Mistakes with State
+
+## Mutating state directly
+
+❌ Wrong
+
+```jsx
+items.push(newItem)
+```
+
+✅ Correct
+
+```jsx
+setItems([...items, newItem])
+```
+
+---
+
+## Updating based on stale state
+
+❌ Risky
+
+```jsx
+setCount(count + 1)
+setCount(count + 1)
+```
+
+✅ Better
+
+```jsx
+setCount(prev => prev + 1)
+setCount(prev => prev + 1)
+```
+
+---
+
+# 21) Important Interview Questions
+
+## What is state?
+
+State is data managed inside a component that changes over time.
+
+## What happens when state changes?
+
+React re-renders the component.
+
+## Why use functional updates?
+
+To safely update state based on previous state.
+
+## Can state be modified directly?
+
+No.
+
+## Difference between props and state?
+
+Props come from parent and are read-only. State is internal and mutable.
+
+---
+
+# 22) Important Interview Points
+
+* State makes UI dynamic
+* useState is used in functional components
+* State updates trigger re-render
+* Never mutate state directly
+* Functional updates prevent stale state issues
+* State updates are asynchronous
+
+---
+
+# 23) Mini Revision Cheat Sheet
+
+## Create state
+
+```jsx
+const [count, setCount] = useState(0)
+```
+
+## Update state
+
+```jsx
+setCount(count + 1)
+```
+
+## Functional update
+
+```jsx
+setCount(prev => prev + 1)
+```
+
+## Boolean toggle
+
+```jsx
+setOpen(!open)
+```
+
+## Array update
+
+```jsx
+setItems([...items, item])
+```
+
+## Object update
+
+```jsx
+setUser({ ...user, age: 23 })
+```
+
