@@ -566,3 +566,750 @@ function useTheme() {
 # 27) Final Summary
 
 React Context API is a built-in feature used for sharing global data between components without prop drilling. It mainly works using createContext, Provider, and useContext, and is commonly used for themes, authentication, and application-wide state.
+
+---
+
+# Redux Toolkit (RTK) — Complete Interview Notes
+
+---
+
+# 1) What is Redux?
+
+Redux is a state management library used to manage global application state.
+
+It helps share state across components in a predictable way.
+
+---
+
+# 2) Why Redux is Needed
+
+React already has:
+
+* props
+* state
+* Context API
+
+But in large applications:
+
+* state becomes difficult to manage
+* prop drilling increases
+* multiple components need same data
+* complex updates become messy
+
+Redux solves these problems.
+
+---
+
+# 3) What is Redux Toolkit?
+
+Redux Toolkit (RTK) is the official recommended way to write Redux logic.
+
+Package:
+
+```bash
+npm install @reduxjs/toolkit react-redux
+```
+
+Redux Toolkit simplifies Redux by reducing:
+
+* boilerplate
+* configuration complexity
+* repetitive code
+
+---
+
+# 4) Problems with Traditional Redux
+
+Traditional Redux required:
+
+* action types
+* action creators
+* reducers
+* switch statements
+* store setup
+* middleware setup
+
+Too much boilerplate.
+
+Redux Toolkit simplifies everything.
+
+---
+
+# 5) Advantages of Redux Toolkit
+
+* less boilerplate
+* easier setup
+* built-in Immer support
+* built-in thunk support
+* better developer experience
+* cleaner code
+* recommended by Redux team
+
+---
+
+# 6) Core Redux Concepts
+
+---
+
+## Store
+
+Global state container.
+
+```text
+Single source of truth
+```
+
+---
+
+## Action
+
+Object describing what happened.
+
+Example:
+
+```js
+{
+  type: 'increment'
+}
+```
+
+---
+
+## Reducer
+
+Function that updates state.
+
+```js
+(state, action) => newState
+```
+
+---
+
+## Dispatch
+
+Sends action to reducer.
+
+```js
+dispatch(action)
+```
+
+---
+
+# 7) Redux Toolkit Flow
+
+```text
+Component → dispatch(action)
+→ reducer updates store
+→ UI re-renders
+```
+
+---
+
+# 8) Setting Up Redux Toolkit
+
+---
+
+## Install Packages
+
+```bash
+npm install @reduxjs/toolkit react-redux
+```
+
+---
+
+# 9) Create Slice
+
+Slice contains:
+
+* state
+* reducers
+* actions
+
+---
+
+## Example: counterSlice.js
+
+```jsx
+import { createSlice } from '@reduxjs/toolkit';
+
+const counterSlice = createSlice({
+  name: 'counter',
+
+  initialState: {
+    value: 0
+  },
+
+  reducers: {
+    increment: (state) => {
+      state.value += 1;
+    },
+
+    decrement: (state) => {
+      state.value -= 1;
+    },
+
+    incrementByAmount: (state, action) => {
+      state.value += action.payload;
+    }
+  }
+});
+
+export const {
+  increment,
+  decrement,
+  incrementByAmount
+} = counterSlice.actions;
+
+export default counterSlice.reducer;
+```
+
+---
+
+# 10) Understanding createSlice
+
+---
+
+## name
+
+Unique slice name.
+
+```jsx
+name: 'counter'
+```
+
+---
+
+## initialState
+
+Default state.
+
+```jsx
+initialState: {
+  value: 0
+}
+```
+
+---
+
+## reducers
+
+Functions that modify state.
+
+```jsx
+reducers: {
+  increment: () => {}
+}
+```
+
+---
+
+# 11) Configure Store
+
+## store.js
+
+```jsx
+import { configureStore } from '@reduxjs/toolkit';
+import counterReducer from './counterSlice';
+
+export const store = configureStore({
+  reducer: {
+    counter: counterReducer
+  }
+});
+```
+
+---
+
+# 12) Provide Store to React App
+
+## main.jsx / index.js
+
+```jsx
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { store } from './store';
+import App from './App';
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <Provider store={store}>
+    <App />
+  </Provider>
+)
+```
+
+---
+
+# 13) useSelector Hook
+
+Used to read data from Redux store.
+
+---
+
+## Syntax
+
+```jsx
+const data = useSelector(state => state.sliceName)
+```
+
+---
+
+## Example
+
+```jsx
+import { useSelector } from 'react-redux';
+
+function Counter() {
+  const count = useSelector(state => state.counter.value);
+
+  return <h1>{count}</h1>;
+}
+```
+
+---
+
+# 14) useDispatch Hook
+
+Used to dispatch actions.
+
+---
+
+## Example
+
+```jsx
+import { useDispatch } from 'react-redux';
+import { increment } from './counterSlice';
+
+function Counter() {
+  const dispatch = useDispatch();
+
+  return (
+    <button onClick={() => dispatch(increment())}>
+      Increment
+    </button>
+  );
+}
+```
+
+---
+
+# 15) Complete Counter Example
+
+```jsx
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  increment,
+  decrement
+} from './counterSlice';
+
+function Counter() {
+  const count = useSelector(state => state.counter.value);
+  const dispatch = useDispatch();
+
+  return (
+    <div>
+      <h1>{count}</h1>
+
+      <button onClick={() => dispatch(increment())}>
+        +
+      </button>
+
+      <button onClick={() => dispatch(decrement())}>
+        -
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
+# 16) Action Payload
+
+Payload carries data.
+
+Example:
+
+```jsx
+dispatch(incrementByAmount(10))
+```
+
+Reducer:
+
+```jsx
+incrementByAmount: (state, action) => {
+  state.value += action.payload;
+}
+```
+
+---
+
+# 17) Immer in Redux Toolkit
+
+Redux Toolkit uses Immer internally.
+
+This allows writing:
+
+```jsx
+state.value += 1
+```
+
+Looks mutable but actually creates immutable updates.
+
+---
+
+# 18) Traditional Redux vs Redux Toolkit
+
+| Traditional Redux        | Redux Toolkit      |
+| ------------------------ | ------------------ |
+| Large boilerplate        | Minimal code       |
+| Manual setup             | Simplified setup   |
+| Manual immutable updates | Immer support      |
+| Complex configuration    | Easy configuration |
+
+---
+
+# 19) Async Operations in Redux Toolkit
+
+Used for:
+
+* API calls
+* async requests
+* fetching data
+
+Redux Toolkit provides:
+
+```jsx
+createAsyncThunk
+```
+
+---
+
+# 20) createAsyncThunk
+
+Used for async logic.
+
+---
+
+## Example
+
+```jsx
+import { createAsyncThunk } from '@reduxjs/toolkit';
+
+export const fetchUsers = createAsyncThunk(
+  'users/fetchUsers',
+
+  async () => {
+    const response = await fetch('https://jsonplaceholder.typicode.com/users');
+
+    return response.json();
+  }
+)
+```
+
+---
+
+# 21) Handling Async States
+
+Common async states:
+
+```text
+loading
+success
+error
+```
+
+---
+
+## Example
+
+```jsx
+extraReducers: (builder) => {
+  builder
+    .addCase(fetchUsers.pending, (state) => {
+      state.loading = true;
+    })
+
+    .addCase(fetchUsers.fulfilled, (state, action) => {
+      state.loading = false;
+      state.users = action.payload;
+    })
+
+    .addCase(fetchUsers.rejected, (state) => {
+      state.loading = false;
+      state.error = true;
+    })
+}
+```
+
+---
+
+# 22) extraReducers
+
+Used to handle:
+
+* async actions
+* external actions
+
+---
+
+# 23) Redux Toolkit Folder Structure
+
+Example:
+
+```text
+src/
+ ├── app/
+ │    ├── store.js
+ │
+ ├── features/
+ │    ├── counter/
+ │    │    ├── counterSlice.js
+ │
+ ├── components/
+ │    ├── Counter.jsx
+```
+
+---
+
+# 24) Middleware in Redux Toolkit
+
+Middleware handles:
+
+* async logic
+* logging
+* API requests
+* side effects
+
+Redux Toolkit automatically includes:
+
+```text
+redux-thunk
+```
+
+---
+
+# 25) Redux DevTools
+
+Redux Toolkit supports Redux DevTools automatically.
+
+Benefits:
+
+* inspect state
+* debug actions
+* track updates
+
+---
+
+# 26) RTK Query
+
+Redux Toolkit includes RTK Query for API fetching.
+
+Benefits:
+
+* caching
+* auto refetching
+* loading states
+* reduced boilerplate
+
+---
+
+# 27) RTK Query Example
+
+```jsx
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+export const api = createApi({
+  reducerPath: 'api',
+
+  baseQuery: fetchBaseQuery({
+    baseUrl: 'https://api.example.com/'
+  }),
+
+  endpoints: (builder) => ({
+    getUsers: builder.query({
+      query: () => 'users'
+    })
+  })
+})
+```
+
+---
+
+# 28) Difference Between Context API and Redux Toolkit
+
+| Context API          | Redux Toolkit             |
+| -------------------- | ------------------------- |
+| Built into React     | External library          |
+| Simpler              | More powerful             |
+| Small-medium apps    | Large apps                |
+| Limited optimization | Better scalability        |
+| Basic state sharing  | Advanced state management |
+
+---
+
+# 29) When to Use Redux Toolkit
+
+Use Redux Toolkit when:
+
+* app has large global state
+* many components share state
+* async operations are heavy
+* state logic becomes complex
+* debugging is important
+
+---
+
+# 30) Common Redux Toolkit Mistakes
+
+---
+
+## Forgetting Provider
+
+❌ Wrong
+
+```jsx
+<App />
+```
+
+without:
+
+```jsx
+<Provider store={store}>
+```
+
+---
+
+## Wrong state access
+
+❌ Wrong
+
+```jsx
+state.value
+```
+
+✅ Correct
+
+```jsx
+state.counter.value
+```
+
+---
+
+## Mutating non-Immer state incorrectly
+
+Always understand immutable updates.
+
+---
+
+# 31) Redux Toolkit Interview Questions
+
+## What is Redux Toolkit?
+
+Official recommended way to use Redux.
+
+## Why Redux Toolkit was introduced?
+
+To reduce Redux boilerplate.
+
+## What is createSlice?
+
+Function that creates reducers and actions together.
+
+## What is configureStore?
+
+Function to create Redux store easily.
+
+## What is useSelector?
+
+Hook for reading Redux state.
+
+## What is useDispatch?
+
+Hook for dispatching actions.
+
+## What is createAsyncThunk?
+
+Utility for async operations.
+
+## What is Immer?
+
+Library that enables immutable updates using mutable syntax.
+
+---
+
+# 32) Important Interview Points
+
+* Redux Toolkit is official Redux approach
+* createSlice reduces boilerplate
+* configureStore simplifies store setup
+* useSelector reads state
+* useDispatch dispatches actions
+* RTK uses Immer internally
+* createAsyncThunk handles async logic
+* RTK Query simplifies API fetching
+
+---
+
+# 33) Mini Revision Cheat Sheet
+
+## Install
+
+```bash
+npm install @reduxjs/toolkit react-redux
+```
+
+---
+
+## Create slice
+
+```jsx
+const slice = createSlice({})
+```
+
+---
+
+## Configure store
+
+```jsx
+configureStore({ reducer })
+```
+
+---
+
+## Provider
+
+```jsx
+<Provider store={store}>
+```
+
+---
+
+## Read state
+
+```jsx
+useSelector(state => state.counter.value)
+```
+
+---
+
+## Dispatch action
+
+```jsx
+dispatch(increment())
+```
+
+---
+
+## Async thunk
+
+```jsx
+createAsyncThunk()
+```
+
+---
+
+# 34) Final Summary
+
+Redux Toolkit is the official and simplified approach for Redux state management. It reduces boilerplate using createSlice and configureStore, supports async logic with createAsyncThunk, and provides scalable global state management for modern React applications.
+
