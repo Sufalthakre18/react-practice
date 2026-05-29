@@ -1312,4 +1312,640 @@ createAsyncThunk()
 # 34) Final Summary
 
 Redux Toolkit is the official and simplified approach for Redux state management. It reduces boilerplate using createSlice and configureStore, supports async logic with createAsyncThunk, and provides scalable global state management for modern React applications.
+# React Performance Optimization — Complete Interview Notes
+
+# Topics Covered
+
+* Performance Optimization Basics
+* Lazy Loading
+* React.lazy
+* Suspense
+* Code Splitting
+* useMemo Hook
+* Memoization
+* Optimization Best Practices
+* Common Mistakes
+* Interview Questions
+
+---
+
+# 1) What is Performance Optimization?
+
+Performance optimization means improving:
+
+* application speed
+* rendering efficiency
+* loading time
+* user experience
+
+Goal:
+
+```text
+Render less, calculate less, load less
+```
+
+---
+
+# 2) Why Performance Optimization is Important
+
+Without optimization:
+
+* slow rendering
+* unnecessary re-renders
+* heavy bundle size
+* poor user experience
+* laggy UI
+
+Especially important in:
+
+* large applications
+* dashboards
+* e-commerce apps
+* data-heavy UIs
+
+---
+
+# 3) Common React Performance Problems
+
+* unnecessary re-renders
+* expensive calculations
+* large JavaScript bundles
+* too many API calls
+* rendering huge lists
+* inline object/function recreation
+
+---
+
+# 4) Important Optimization Techniques
+
+| Technique      | Purpose                          |
+| -------------- | -------------------------------- |
+| Lazy Loading   | Load components only when needed |
+| Code Splitting | Split bundle into smaller chunks |
+| useMemo        | Memoize expensive values         |
+| useCallback    | Memoize functions                |
+| React.memo     | Prevent unnecessary re-renders   |
+| Virtualization | Optimize large lists             |
+
+---
+
+# 5) What is Lazy Loading?
+
+Lazy loading means:
+
+```text
+Load components only when required
+```
+
+Instead of loading entire application initially.
+
+---
+
+# 6) Benefits of Lazy Loading
+
+* smaller initial bundle
+* faster page load
+* improved performance
+* better user experience
+* reduced memory usage
+
+---
+
+# 7) Code Splitting
+
+Code splitting breaks application into smaller chunks.
+
+Instead of:
+
+```text
+One huge JavaScript bundle
+```
+
+React loads:
+
+```text
+Only required chunks
+```
+
+---
+
+# 8) React.lazy()
+
+Used for lazy loading components.
+
+---
+
+## Syntax
+
+```jsx
+const Component = React.lazy(() => import('./Component'))
+```
+
+---
+
+# 9) Basic Lazy Loading Example
+
+```jsx
+import React, { Suspense } from 'react';
+
+const About = React.lazy(() => import('./About'));
+
+function App() {
+  return (
+    <Suspense fallback={<h1>Loading...</h1>}>
+      <About />
+    </Suspense>
+  );
+}
+```
+
+---
+
+# 10) Understanding React.lazy
+
+```jsx
+React.lazy(() => import('./About'))
+```
+
+### What happens?
+
+* component loads only when needed
+* dynamic import creates separate chunk
+* reduces initial bundle size
+
+---
+
+# 11) Suspense Component
+
+Used to display fallback UI while lazy component loads.
+
+---
+
+## Syntax
+
+```jsx
+<Suspense fallback={<Loading />}>
+  <Component />
+</Suspense>
+```
+
+---
+
+# 12) Fallback UI
+
+Fallback can be:
+
+* spinner
+* loading text
+* skeleton UI
+
+Example:
+
+```jsx
+<Suspense fallback={<h1>Loading...</h1>}>
+```
+
+---
+
+# 13) Route-Based Lazy Loading
+
+Very common in real applications.
+
+---
+
+## Example
+
+```jsx
+const Home = React.lazy(() => import('./Home'));
+const About = React.lazy(() => import('./About'));
+
+function App() {
+  return (
+    <Suspense fallback={<h1>Loading...</h1>}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+      </Routes>
+    </Suspense>
+  );
+}
+```
+
+---
+
+# 14) Lazy Loading Advantages
+
+* improves initial load time
+* reduces unused code download
+* scalable for large apps
+* better mobile performance
+
+---
+
+# 15) Lazy Loading Disadvantages
+
+* small delay during first load
+* more network requests
+* over-splitting may hurt performance
+
+---
+
+# 16) What is Memoization?
+
+Memoization means:
+
+```text
+Caching previously computed result
+```
+
+So React does not recalculate unnecessarily.
+
+---
+
+# 17) What is useMemo?
+
+useMemo is a React hook used to memoize expensive calculations.
+
+---
+
+## Syntax
+
+```jsx
+const memoizedValue = useMemo(() => {
+  return expensiveCalculation();
+}, [dependencies])
+```
+
+---
+
+# 18) Why useMemo is Needed
+
+Without useMemo:
+
+```text
+Expensive calculations run on every render
+```
+
+With useMemo:
+
+```text
+Calculation runs only when dependencies change
+```
+
+---
+
+# 19) Basic useMemo Example
+
+```jsx
+import { useMemo, useState } from 'react';
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  const expensiveValue = useMemo(() => {
+    console.log('Calculating...');
+
+    return count * 2;
+  }, [count]);
+
+  return (
+    <div>
+      <h1>{expensiveValue}</h1>
+
+      <button onClick={() => setCount(count + 1)}>
+        Increment
+      </button>
+    </div>
+  );
+}
+```
+
+---
+
+# 20) How useMemo Works
+
+```jsx
+useMemo(() => calculation, [dependencies])
+```
+
+React:
+
+* stores calculated value
+* reuses cached value
+* recalculates only if dependency changes
+
+---
+
+# 21) Expensive Calculation Example
+
+```jsx
+const result = useMemo(() => {
+  let sum = 0;
+
+  for(let i = 0; i < 1000000000; i++) {
+    sum += i;
+  }
+
+  return sum;
+}, [])
+```
+
+Without useMemo:
+
+```text
+UI becomes slow on every render
+```
+
+---
+
+# 22) useMemo with Filtering Lists
+
+Very common real-world example.
+
+```jsx
+const filteredUsers = useMemo(() => {
+  return users.filter(user => user.active);
+}, [users])
+```
+
+---
+
+# 23) useMemo with Sorting
+
+```jsx
+const sortedProducts = useMemo(() => {
+  return [...products].sort((a, b) => a.price - b.price);
+}, [products])
+```
+
+---
+
+# 24) Difference Between useMemo and useCallback
+
+| useMemo                 | useCallback        |
+| ----------------------- | ------------------ |
+| Memoizes values         | Memoizes functions |
+| Returns computed result | Returns function   |
+
+---
+
+# 25) What is React.memo?
+
+React.memo prevents unnecessary component re-renders.
+
+---
+
+## Example
+
+```jsx
+const Child = React.memo(function Child({ name }) {
+  return <h1>{name}</h1>;
+});
+```
+
+---
+
+# 26) React.memo + useCallback
+
+Very common optimization pair.
+
+```jsx
+const handleClick = useCallback(() => {
+  console.log('Clicked');
+}, [])
+```
+
+Prevents child component re-render.
+
+---
+
+# 27) When to Use useMemo
+
+Use useMemo for:
+
+* expensive calculations
+* filtering
+* sorting
+* large datasets
+* derived values
+
+---
+
+# 28) When NOT to Use useMemo
+
+Avoid unnecessary memoization.
+
+❌ Bad example:
+
+```jsx
+const value = useMemo(() => count + 1, [count])
+```
+
+Simple calculations do not need memoization.
+
+---
+
+# 29) Over-Optimization Problem
+
+Too much optimization may:
+
+* increase complexity
+* increase memory usage
+* reduce readability
+
+Optimize only when needed.
+
+---
+
+# 30) Common Performance Optimization Mistakes
+
+---
+
+## Missing dependency array
+
+❌ Wrong
+
+```jsx
+useMemo(() => calculate())
+```
+
+---
+
+## Wrong dependencies
+
+Incorrect dependencies cause stale values.
+
+---
+
+## Using useMemo everywhere
+
+Can worsen performance.
+
+---
+
+## Lazy loading tiny components unnecessarily
+
+Creates unnecessary network requests.
+
+---
+
+# 31) Real-World Optimization Example
+
+---
+
+## Search Filtering
+
+```jsx
+const filteredItems = useMemo(() => {
+  return items.filter(item =>
+    item.name.includes(search)
+  );
+}, [items, search])
+```
+
+---
+
+## Dashboard Analytics
+
+```jsx
+const analytics = useMemo(() => {
+  return heavyAnalyticsCalculation(data);
+}, [data])
+```
+
+---
+
+# 32) Performance Optimization Strategy
+
+---
+
+## Step 1
+
+Identify performance bottlenecks.
+
+---
+
+## Step 2
+
+Use React DevTools Profiler.
+
+---
+
+## Step 3
+
+Optimize expensive renders/calculations.
+
+---
+
+## Step 4
+
+Use memoization carefully.
+
+---
+
+# 33) React DevTools Profiler
+
+Used for:
+
+* detecting slow components
+* measuring render time
+* identifying unnecessary re-renders
+
+---
+
+# 34) Lazy Loading vs useMemo
+
+| Lazy Loading             | useMemo                |
+| ------------------------ | ---------------------- |
+| Optimizes loading        | Optimizes calculations |
+| Delays component loading | Caches computed values |
+| Reduces bundle size      | Reduces recalculations |
+
+---
+
+# 35) Interview Questions
+
+## What is lazy loading?
+
+Loading components only when needed.
+
+## Why use Suspense?
+
+To show fallback UI during lazy loading.
+
+## What is useMemo?
+
+Hook for memoizing expensive calculations.
+
+## Difference between useMemo and useCallback?
+
+useMemo memoizes values. useCallback memoizes functions.
+
+## When should useMemo be avoided?
+
+For simple inexpensive calculations.
+
+## What is code splitting?
+
+Breaking application bundle into smaller chunks.
+
+---
+
+# 36) Important Interview Points
+
+* Lazy loading improves initial performance
+* React.lazy loads components dynamically
+* Suspense handles loading state
+* useMemo caches expensive calculations
+* Memoization reduces unnecessary recalculations
+* Over-optimization should be avoided
+* React.memo prevents unnecessary re-renders
+
+---
+
+# 37) Mini Revision Cheat Sheet
+
+## Lazy loading
+
+```jsx
+const About = React.lazy(() => import('./About'))
+```
+
+---
+
+## Suspense
+
+```jsx
+<Suspense fallback={<h1>Loading...</h1>}>
+```
+
+---
+
+## useMemo
+
+```jsx
+const value = useMemo(() => calc(), [deps])
+```
+
+---
+
+## useCallback
+
+```jsx
+const fn = useCallback(() => {}, [])
+```
+
+---
+
+## React.memo
+
+```jsx
+React.memo(Component)
+```
+
+---
+
+# 38) Final Summary
+
+React performance optimization improves rendering speed and user experience by reducing unnecessary renders, calculations, and bundle sizes. Lazy loading and code splitting improve loading performance, while useMemo optimizes expensive calculations using memoization.
 
