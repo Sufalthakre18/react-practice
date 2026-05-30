@@ -1,0 +1,1128 @@
+# Node.js Master Notes (Interview Ready)
+
+# Part 1: Getting Started with Node.js
+
+---
+
+# 1. Introduction to Node.js
+
+## Definition
+
+Node.js is an **open-source, cross-platform JavaScript runtime environment** that allows JavaScript code to run outside the browser.
+
+### Before Node.js
+
+- JavaScript → Browser only
+
+### After Node.js
+
+- JavaScript → Browser + Server
+
+Node.js is built on:
+
+1. Google Chrome's V8 JavaScript Engine
+2. Event-Driven Architecture
+3. Non-Blocking I/O Model
+4. Single-Threaded Event Loop
+
+---
+
+## Official Definition
+
+> "Node.js is a JavaScript runtime built on Chrome's V8 JavaScript engine."
+
+---
+
+## Why Node.js Was Created
+
+Traditional servers create a new thread for every request.
+
+### Example
+
+```text
+Request A → Thread 1
+Request B → Thread 2
+Request C → Thread 3
+```
+
+### Problems
+
+- High memory usage
+- Thread synchronization issues
+- Expensive context switching
+- Poor scalability
+
+Node.js introduced:
+
+- Single Thread
+- Event Loop
+- Asynchronous Programming
+- Non-Blocking I/O
+
+### Result
+
+- Faster
+- Lightweight
+- Highly scalable
+
+---
+
+# Architecture of Node.js
+
+```text
+Client Request
+      ↓
+ Event Queue
+      ↓
+ Event Loop
+      ↓
+Node APIs (Libuv)
+      ↓
+Operating System
+```
+
+---
+
+## Core Components
+
+### 1. V8 Engine
+
+Converts JavaScript into machine code.
+
+#### Responsibilities
+
+- Parsing
+- Compilation
+- Optimization
+- Execution
+
+#### Benefits
+
+- Extremely fast
+- Just-In-Time (JIT) compilation
+
+---
+
+### 2. Libuv
+
+Libuv provides:
+
+- Event Loop
+- Thread Pool
+- Asynchronous File Operations
+- Networking
+
+Without Libuv, Node.js could not perform asynchronous operations.
+
+---
+
+### 3. Event Loop
+
+The heart of Node.js.
+
+Responsible for:
+
+- Monitoring tasks
+- Handling callbacks
+- Processing asynchronous operations
+
+---
+
+# Features of Node.js
+
+## 1. Asynchronous
+
+Does not wait for operations to complete.
+
+### Example
+
+```js
+console.log("Start");
+
+setTimeout(() => {
+  console.log("Async");
+}, 2000);
+
+console.log("End");
+```
+
+### Output
+
+```text
+Start
+End
+Async
+```
+
+---
+
+## 2. Event Driven
+
+Everything revolves around events.
+
+### Examples
+
+- Click Event
+- HTTP Request Event
+- File Read Event
+
+---
+
+## 3. Non-Blocking
+
+Node.js does not stop execution while waiting for tasks.
+
+---
+
+## 4. Fast
+
+Powered by the V8 Engine.
+
+Machine code execution makes it very fast.
+
+---
+
+## 5. Scalable
+
+Handles thousands of concurrent requests efficiently.
+
+---
+
+# Advantages of Node.js
+
+1. Same language for frontend and backend
+2. Fast execution
+3. Large ecosystem (npm)
+4. Real-time applications
+5. Scalable architecture
+6. Huge community support
+
+---
+
+# Disadvantages of Node.js
+
+1. Single-threaded CPU limitations
+2. Callback complexity
+3. Not ideal for heavy computation
+4. Async code can become difficult to manage
+
+---
+
+# Applications of Node.js
+
+1. REST APIs
+2. Chat Applications
+3. Streaming Services
+4. Real-Time Dashboards
+5. Microservices
+6. Online Games
+7. E-Commerce Systems
+
+### Popular Companies Using Node.js
+
+- Netflix
+- PayPal
+- LinkedIn
+- Uber
+- Walmart
+
+---
+
+# 2. Installing Node.js
+
+## Step 1: Download Node.js
+
+Choose one of the following versions:
+
+### LTS (Recommended)
+
+- Stable
+- Production Ready
+- Long-term support
+
+### Current
+
+- Latest features
+- Frequent updates
+
+---
+
+## Step 2: Install Node.js
+
+The installer automatically installs:
+
+- Node.js Runtime
+- npm (Node Package Manager)
+
+---
+
+## Step 3: Verify Installation
+
+### Check Node Version
+
+```bash
+node -v
+```
+
+Example:
+
+```text
+v22.5.1
+```
+
+### Check npm Version
+
+```bash
+npm -v
+```
+
+Example:
+
+```text
+10.8.1
+```
+
+---
+
+## What Gets Installed?
+
+1. Node Runtime
+2. npm
+3. Core Modules
+4. Node Executable
+
+---
+
+# 3. Non-Blocking I/O
+
+## What is I/O?
+
+I/O = Input / Output Operations
+
+### Examples
+
+- Reading Files
+- Writing Files
+- Database Queries
+- API Calls
+- Network Requests
+
+---
+
+## Blocking I/O
+
+Execution waits until the operation completes.
+
+### Example
+
+```js
+const fs = require("fs");
+
+const data = fs.readFileSync("test.txt", "utf-8");
+
+console.log(data);
+console.log("Finished");
+```
+
+### Output
+
+```text
+File Content
+Finished
+```
+
+Execution waits until file reading finishes.
+
+---
+
+## Non-Blocking I/O
+
+Node.js delegates work to Libuv.
+
+### Example
+
+```js
+const fs = require("fs");
+
+fs.readFile("test.txt", "utf-8", (err, data) => {
+  console.log(data);
+});
+
+console.log("Finished");
+```
+
+### Output
+
+```text
+Finished
+File Content
+```
+
+---
+
+## Blocking vs Non-Blocking
+
+| Blocking | Non-Blocking |
+|-----------|-------------|
+| Waits for completion | Doesn't wait |
+| Synchronous | Asynchronous |
+| Lower scalability | Higher scalability |
+| Thread remains busy | Thread remains free |
+
+---
+
+# 4. Node REPL
+
+REPL stands for:
+
+```text
+Read
+Evaluate
+Print
+Loop
+```
+
+Interactive Node.js shell.
+
+### Start REPL
+
+```bash
+node
+```
+
+### Example
+
+```js
+> 10 + 20
+30
+```
+
+### Useful Commands
+
+```bash
+.help
+.clear
+.exit
+.save file.js
+.load file.js
+```
+
+---
+
+# Why Use REPL?
+
+- Quick testing
+- Debugging
+- Learning JavaScript
+- API experimentation
+
+---
+
+# 5. Global Objects in Node.js
+
+## What Are Global Objects?
+
+Objects available everywhere without importing.
+
+Example:
+
+```js
+console.log("Hello");
+```
+
+No import required.
+
+---
+
+## Global Object
+
+### Browser
+
+```js
+window
+```
+
+### Node.js
+
+```js
+global
+```
+
+---
+
+## Common Global Objects
+
+### console
+
+```js
+console.log("Hello");
+console.error("Error");
+console.table(data);
+```
+
+---
+
+### process
+
+```js
+console.log(process.pid);
+console.log(process.version);
+console.log(process.platform);
+```
+
+#### process.argv
+
+```bash
+node app.js hello
+```
+
+Output:
+
+```js
+[
+  "node",
+  "app.js",
+  "hello"
+]
+```
+
+---
+
+### __dirname
+
+```js
+console.log(__dirname);
+```
+
+---
+
+### __filename
+
+```js
+console.log(__filename);
+```
+
+---
+
+### Timers
+
+```js
+setTimeout(() => {}, 1000);
+
+setInterval(() => {}, 1000);
+
+clearTimeout(id);
+
+clearInterval(id);
+```
+
+---
+
+### Buffer
+
+```js
+const buffer = Buffer.from("Hello");
+```
+
+---
+
+## global vs window
+
+| global | window |
+|----------|---------|
+| Node.js | Browser |
+| No DOM | DOM Access |
+| Server Environment | Client Environment |
+
+---
+
+# Part 2: Diving into Node.js
+
+---
+
+# 1. CommonJS Modules
+
+## What is a Module?
+
+A module is a reusable piece of code.
+
+### math.js
+
+```js
+function add(a, b) {
+  return a + b;
+}
+
+module.exports = add;
+```
+
+### Import
+
+```js
+const add = require("./math");
+
+console.log(add(10, 20));
+```
+
+---
+
+## Export Multiple Functions
+
+```js
+function add(a, b) {
+  return a + b;
+}
+
+function sub(a, b) {
+  return a - b;
+}
+
+module.exports = {
+  add,
+  sub,
+};
+```
+
+### Import
+
+```js
+const math = require("./math");
+
+math.add(10, 20);
+math.sub(20, 10);
+```
+
+---
+
+## Characteristics
+
+- Synchronous Loading
+- Uses `require()`
+- Uses `module.exports`
+- Default Node.js Module System
+
+---
+
+# 2. ES Modules (ESM)
+
+Modern JavaScript module system.
+
+### Export
+
+```js
+export const add = (a, b) => a + b;
+```
+
+### Named Import
+
+```js
+import { add } from "./math.js";
+```
+
+### Default Export
+
+```js
+export default function hello() {
+  console.log("Hello");
+}
+```
+
+### Import Default
+
+```js
+import hello from "./math.js";
+```
+
+---
+
+## Enable ESM
+
+```json
+{
+  "type": "module"
+}
+```
+
+---
+
+## CommonJS vs ES Modules
+
+| CommonJS | ES Modules |
+|-----------|------------|
+| require() | import |
+| module.exports | export |
+| Synchronous | Static Analysis |
+| Node-specific | Standard JavaScript |
+
+---
+
+# 3. Module Wrapper Function
+
+One of the most important Node.js interview topics.
+
+---
+
+## Actual Code
+
+```js
+console.log("Hello");
+```
+
+---
+
+## Internally Becomes
+
+```js
+(function (
+  exports,
+  require,
+  module,
+  __filename,
+  __dirname
+) {
+  console.log("Hello");
+});
+```
+
+---
+
+## Why Wrapper Exists
+
+- Module Scope
+- Encapsulation
+- Dependency Loading
+- Metadata Access
+
+---
+
+## Wrapper Parameters
+
+### exports
+
+Used for exporting values.
+
+### require
+
+Used for importing modules.
+
+### module
+
+Represents current module.
+
+### __filename
+
+Current file path.
+
+### __dirname
+
+Current directory path.
+
+---
+
+## Proof
+
+```js
+console.log(arguments);
+```
+
+---
+
+## Benefits
+
+1. Avoids global pollution
+2. Security
+3. Encapsulation
+4. Independent modules
+
+---
+
+## Interview Question
+
+### Why are variables not global in Node.js?
+
+Because every file is wrapped inside the Module Wrapper Function.
+
+---
+
+# 4. Built-In Modules
+
+Node.js provides many modules out of the box.
+
+No installation required.
+
+---
+
+# fs Module
+
+File System Operations.
+
+```js
+const fs = require("fs");
+```
+
+### Read File
+
+```js
+fs.readFile(
+  "test.txt",
+  "utf8",
+  (err, data) => {
+    console.log(data);
+  }
+);
+```
+
+### Write File
+
+```js
+fs.writeFile(
+  "test.txt",
+  "Hello",
+  () => {}
+);
+```
+
+---
+
+# path Module
+
+```js
+const path = require("path");
+```
+
+### Join Paths
+
+```js
+path.join(
+  "users",
+  "john",
+  "file.txt"
+);
+```
+
+Output:
+
+```text
+users/john/file.txt
+```
+
+### Extension
+
+```js
+path.extname("file.js");
+```
+
+Output:
+
+```text
+.js
+```
+
+---
+
+# os Module
+
+```js
+const os = require("os");
+
+os.platform();
+os.hostname();
+os.cpus();
+os.totalmem();
+```
+
+---
+
+# http Module
+
+```js
+const http = require("http");
+
+const server = http.createServer(
+  (req, res) => {
+    res.end("Hello");
+  }
+);
+
+server.listen(3000);
+```
+
+---
+
+# events Module
+
+```js
+const EventEmitter =
+  require("events");
+
+const emitter =
+  new EventEmitter();
+
+emitter.on("greet", () => {
+  console.log("Hello");
+});
+
+emitter.emit("greet");
+```
+
+---
+
+# url Module
+
+```js
+const url = require("url");
+```
+
+Used for URL parsing and manipulation.
+
+---
+
+# crypto Module
+
+```js
+const crypto =
+  require("crypto");
+```
+
+### Hash Example
+
+```js
+crypto
+  .createHash("sha256")
+  .update("password")
+  .digest("hex");
+```
+
+---
+
+# stream Module
+
+Used for handling large data efficiently.
+
+### Examples
+
+- Video Streaming
+- File Uploads
+- Data Processing
+
+---
+
+# Buffer Module
+
+```js
+const buffer =
+  Buffer.from("Hello");
+```
+
+Used for binary data handling.
+
+---
+
+# util Module
+
+Utility helper functions.
+
+Commonly used to convert callback-based code into Promise-based code.
+
+---
+
+# Top 10 Built-In Modules
+
+1. fs
+2. path
+3. os
+4. http
+5. https
+6. events
+7. stream
+8. crypto
+9. url
+10. util
+
+---
+
+# Frequently Asked Interview Questions
+
+## Q1. What is Node.js?
+
+JavaScript runtime built on the V8 Engine for server-side development.
+
+---
+
+## Q2. Why is Node.js Fast?
+
+Because of:
+
+- V8 Engine
+- Event Loop
+- Non-Blocking I/O
+
+---
+
+## Q3. What is Non-Blocking I/O?
+
+Execution continues while I/O operations run asynchronously.
+
+---
+
+## Q4. What is REPL?
+
+Read-Evaluate-Print-Loop interactive shell.
+
+---
+
+## Q5. Difference Between CommonJS and ES Modules?
+
+### CommonJS
+
+```js
+require();
+module.exports;
+```
+
+### ES Modules
+
+```js
+import;
+export;
+```
+
+---
+
+## Q6. What is Module Wrapper Function?
+
+An internal function that wraps every Node.js file to provide scope and module features.
+
+---
+
+## Q7. Name Some Built-In Modules.
+
+- fs
+- path
+- os
+- http
+- crypto
+- stream
+- events
+- util
+- url
+
+---
+
+## Q8. Why is Node.js Single Threaded?
+
+To efficiently manage concurrent requests using the Event Loop instead of creating many threads.
+
+---
+
+## Q9. What is Event Loop?
+
+A mechanism that continuously checks and executes asynchronous callbacks.
+
+---
+
+## Q10. Difference Between process.nextTick() and setTimeout()?
+
+### process.nextTick()
+
+- Executes before the Event Loop continues
+- Higher priority
+
+### setTimeout()
+
+- Executes during the Timers Phase
+- Lower priority
+
+### Example
+
+```js
+console.log("Start");
+
+process.nextTick(() => {
+  console.log("nextTick");
+});
+
+setTimeout(() => {
+  console.log("timeout");
+}, 0);
+
+console.log("End");
+```
+
+### Output
+
+```text
+Start
+End
+nextTick
+timeout
+```
+
+---
+
+# Quick Revision Sheet (1 Minute Before Interview)
+
+## Node.js
+
+- JavaScript Runtime
+- Built on V8
+- Event-Driven
+- Non-Blocking I/O
+- Single-Threaded Event Loop
+
+## Core Components
+
+- V8 Engine
+- Libuv
+- Event Loop
+
+## Module Systems
+
+### CommonJS
+
+```js
+require()
+module.exports
+```
+
+### ESM
+
+```js
+import
+export
+```
+
+## Global Objects
+
+- global
+- process
+- Buffer
+- __dirname
+- __filename
+
+## Important Built-In Modules
+
+- fs
+- path
+- os
+- http
+- events
+- crypto
+- stream
+- url
+- util
+
+## Interview Keywords
+
+- Event Loop
+- Callback Queue
+- Non-Blocking I/O
+- Libuv
+- CommonJS
+- ES Modules
+- Module Wrapper Function
+- REPL
+- Global Objects
+- Built-In Modules
+
+---
