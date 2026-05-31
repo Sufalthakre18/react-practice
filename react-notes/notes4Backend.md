@@ -1313,5 +1313,995 @@ A: When Node.js performs I/O (read file, query DB), it hands the work off to the
 A: The `node:` prefix (e.g., `require('node:fs')`) explicitly marks a module as a Node.js core module, preventing npm packages with the same name from shadowing it. It also slightly improves load performance. Recommended as best practice.
 
 ---
+# Node.js — API Design & Middleware
+### Complete Interview-Ready Notes
 
-*Last updated: 2026 — Covers Node.js v18 through v22 LTS*
+---
+
+## Table of Contents
+
+1. [Introduction to Express.js](#1-introduction-to-expressjs)
+2. [Creating a Server with Express](#2-creating-a-server-with-express)
+3. [What is an API?](#3-what-is-an-api)
+4. [HTTP Methods](#4-http-methods)
+5. [Creating and Testing APIs](#5-creating-and-testing-apis)
+6. [API for Create, Update, Delete Data](#6-api-for-create-update-delete-data)
+7. [Middleware — Introduction](#7-middleware--introduction)
+8. [Application-Level Middleware](#8-application-level-middleware)
+9. [Router-Level Middleware](#9-router-level-middleware)
+10. [Built-in Middleware](#10-built-in-middleware)
+11. [Third-Party Middleware](#11-third-party-middleware)
+12. [Interview Questions & Answers](#12-interview-questions--answers)
+
+---
+
+## 1. Introduction to Express.js
+
+### What is Express.js?
+
+Express.js is a **minimal, fast, and unopinionated web framework** for Node.js. It is built on top of Node's built-in `http` module and provides a clean abstraction for handling HTTP requests, routing, and middleware.
+
+> "Express is to Node.js what jQuery was to the browser — it doesn't replace it, it makes it far easier to use."
+
+### Why Express over Plain Node.js?
+
+| Feature | Plain Node.js | Express.js |
+|---|---|---|
+| Routing | Manual `if/else` or `switch` | `app.get()`, `app.post()`, etc. |
+| Request parsing | Manual buffer accumulation | `express.json()` built-in |
+| Middleware | Not supported natively | First-class `app.use()` |
+| Response helpers | `res.write()`, `res.end()` | `res.json()`, `res.send()`, `res.status()` |
+| Code volume | ~40 lines for basic server | ~5 lines for same result |
+
+### Installation
+
+```bash
+# Initialize project
+npm init -y
+
+# Install Express
+npm install express
+
+# Install nodemon for development (auto-restart on changes)
+npm install --save-dev nodemon
+```
+
+Add to `package.json`:
+```json
+"scripts": {
+  "start": "node index.js",
+  "dev": "nodemon index.js"
+}
+```
+
+---
+
+## 2. Creating a Server with Express
+
+### Minimal Express Server
+
+```javascript
+// index.js
+const express = require('express');
+const app = express();
+
+const PORT = 3000;
+
+app.get('/', (req, res) => {
+  res.send('Hello, World!');
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
+```
+
+### Understanding `app`
+
+`app` is the Express application instance. It is the central object that:
+- Registers routes
+- Registers middleware
+- Configures settings
+- Starts listening on a port
+
+### The `req` and `res` Objects
+
+**`req` (Request Object)** — Represents the incoming HTTP request.
+
+```javascript
+req.params      // Route parameters: /users/:id → req.params.id
+req.query       // Query strings: /users?age=25 → req.query.age
+req.body        // Request body (requires body-parser middleware)
+req.headers     // HTTP headers
+req.method      // HTTP method: GET, POST, etc.
+req.url         // Full URL path
+req.ip          // Client IP address
+```
+
+**`res` (Response Object)** — Represents the outgoing HTTP response.
+
+```javascript
+res.send('Hello')          // Send a string/HTML response
+res.json({ key: 'value' }) // Send a JSON response
+res.status(404)            // Set HTTP status code
+res.status(201).json({})   // Chain status and json
+res.redirect('/home')      // Redirect to another URL
+res.render('index')        // Render a view template
+res.set('Content-Type', 'text/html') // Set a header
+res.end()                  // End response with no data
+```
+
+### Environment Variables with `.env`
+
+```bash
+npm install dotenv
+```
+
+```javascript
+// .env file
+PORT=5000
+NODE_ENV=development
+
+// index.js
+require('dotenv').config();
+const PORT = process.env.PORT || 3000;
+```
+
+---
+
+## 3. What is an API?
+
+### Definition
+
+An **API (Application Programming Interface)** is a set of rules and protocols that allow one software application to communicate with another. In web development, a **REST API** (Representational State Transfer) uses HTTP to expose data and functionality over the internet.
+
+### REST API Principles (6 Constraints)
+
+1. **Client-Server** — Frontend and backend are separate, communicate via HTTP.
+2. **Stateless** — Each request contains all information needed; server stores no session state.
+3. **Cacheable** — Responses must define themselves as cacheable or non-cacheable.
+4. **Uniform Interface** — Consistent URL structure, standard HTTP methods.
+5. **Layered System** — Client doesn't know if it's talking to the actual server or a proxy.
+6. **Code on Demand** *(optional)* — Server can send executable code (e.g., JavaScript).
+
+### REST API URL Design Best Practices
+
+```
+# ✅ Good — use nouns, use plural, use lowercase
+GET    /api/users          → Get all users
+GET    /api/users/42       → Get user with ID 42
+POST   /api/users          → Create a new user
+PUT    /api/users/42       → Update user 42 (full update)
+PATCH  /api/users/42       → Update user 42 (partial update)
+DELETE /api/users/42       → Delete user 42
+
+# ❌ Bad — avoid verbs in URLs
+GET    /api/getUsers
+POST   /api/createUser
+DELETE /api/deleteUser/42
+```
+
+### API Response Structure (Standard)
+
+```json
+{
+  "success": true,
+  "message": "Users fetched successfully",
+  "data": [
+    { "id": 1, "name": "Arjun" }
+  ]
+}
+```
+
+---
+
+## 4. HTTP Methods
+
+### The 5 Core HTTP Methods
+
+| Method | Purpose | Request Body | Safe? | Idempotent? |
+|---|---|---|---|---|
+| `GET` | Retrieve data | No | ✅ Yes | ✅ Yes |
+| `POST` | Create new data | Yes | ❌ No | ❌ No |
+| `PUT` | Replace entire resource | Yes | ❌ No | ✅ Yes |
+| `PATCH` | Partially update a resource | Yes | ❌ No | ❌ No* |
+| `DELETE` | Remove a resource | Optional | ❌ No | ✅ Yes |
+
+> **Safe** = Does not modify data on the server.  
+> **Idempotent** = Calling multiple times produces the same result.
+
+### HTTP Status Codes
+
+```
+2xx — Success
+  200 OK              → Standard success (GET, PUT, PATCH)
+  201 Created         → Resource successfully created (POST)
+  204 No Content      → Success but no response body (DELETE)
+
+3xx — Redirection
+  301 Moved Permanently
+  302 Found (temporary redirect)
+  304 Not Modified    → Cached version is still valid
+
+4xx — Client Errors
+  400 Bad Request     → Invalid input from client
+  401 Unauthorized    → Not authenticated (no/invalid token)
+  403 Forbidden       → Authenticated but not authorized
+  404 Not Found       → Resource does not exist
+  409 Conflict        → Duplicate resource
+  422 Unprocessable Entity → Validation failed
+
+5xx — Server Errors
+  500 Internal Server Error → Unexpected error on server
+  502 Bad Gateway
+  503 Service Unavailable
+```
+
+---
+
+## 5. Creating and Testing APIs
+
+### Project Structure (Recommended)
+
+```
+my-api/
+├── controllers/
+│   └── userController.js
+├── routes/
+│   └── userRoutes.js
+├── middleware/
+│   └── auth.js
+├── models/
+│   └── user.js
+├── index.js
+└── package.json
+```
+
+### Full GET API Example
+
+```javascript
+// index.js
+const express = require('express');
+const app = express();
+
+app.use(express.json()); // Parse JSON request bodies
+
+// In-memory data (use a database in production)
+let users = [
+  { id: 1, name: 'Arjun', email: 'arjun@example.com' },
+  { id: 2, name: 'Priya', email: 'priya@example.com' },
+];
+
+// GET all users
+app.get('/api/users', (req, res) => {
+  res.status(200).json({
+    success: true,
+    count: users.length,
+    data: users,
+  });
+});
+
+// GET single user by ID
+app.get('/api/users/:id', (req, res) => {
+  const user = users.find((u) => u.id === parseInt(req.params.id));
+
+  if (!user) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
+
+  res.status(200).json({ success: true, data: user });
+});
+
+app.listen(3000, () => console.log('Server on port 3000'));
+```
+
+### Testing APIs
+
+#### Using Thunder Client / Postman
+
+1. Install **Thunder Client** extension in VS Code (or use Postman).
+2. Create a new request.
+3. Set method (GET, POST, etc.) and URL.
+4. For POST/PUT/PATCH — go to **Body → JSON** and add your payload.
+5. Click **Send**.
+
+#### Using `curl` (terminal)
+
+```bash
+# GET request
+curl http://localhost:3000/api/users
+
+# GET with ID
+curl http://localhost:3000/api/users/1
+
+# POST request
+curl -X POST http://localhost:3000/api/users \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Raj", "email": "raj@example.com"}'
+
+# DELETE request
+curl -X DELETE http://localhost:3000/api/users/1
+```
+
+#### Query Parameters Example
+
+```javascript
+// GET /api/users?name=Arjun&page=1&limit=10
+app.get('/api/users', (req, res) => {
+  const { name, page = 1, limit = 10 } = req.query;
+
+  let result = users;
+  if (name) {
+    result = result.filter((u) => u.name.toLowerCase().includes(name.toLowerCase()));
+  }
+
+  res.json({ success: true, data: result });
+});
+```
+
+---
+
+## 6. API for Create, Update, Delete Data
+
+### POST — Create a Resource
+
+```javascript
+app.post('/api/users', (req, res) => {
+  const { name, email } = req.body;
+
+  // Basic validation
+  if (!name || !email) {
+    return res.status(400).json({
+      success: false,
+      message: 'Name and email are required',
+    });
+  }
+
+  // Check for duplicate
+  const existing = users.find((u) => u.email === email);
+  if (existing) {
+    return res.status(409).json({ success: false, message: 'Email already exists' });
+  }
+
+  const newUser = {
+    id: users.length + 1,
+    name,
+    email,
+  };
+
+  users.push(newUser);
+
+  res.status(201).json({
+    success: true,
+    message: 'User created successfully',
+    data: newUser,
+  });
+});
+```
+
+### PUT — Full Update (Replace Entire Resource)
+
+```javascript
+app.put('/api/users/:id', (req, res) => {
+  const { id } = req.params;
+  const { name, email } = req.body;
+
+  const index = users.findIndex((u) => u.id === parseInt(id));
+
+  if (index === -1) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
+
+  if (!name || !email) {
+    return res.status(400).json({ success: false, message: 'Name and email are required' });
+  }
+
+  // Replace the entire object
+  users[index] = { id: parseInt(id), name, email };
+
+  res.status(200).json({
+    success: true,
+    message: 'User updated successfully',
+    data: users[index],
+  });
+});
+```
+
+### PATCH — Partial Update
+
+```javascript
+app.patch('/api/users/:id', (req, res) => {
+  const { id } = req.params;
+  const updates = req.body; // Only the fields to update
+
+  const index = users.findIndex((u) => u.id === parseInt(id));
+
+  if (index === -1) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
+
+  // Merge existing data with updates (spread operator)
+  users[index] = { ...users[index], ...updates };
+
+  res.status(200).json({
+    success: true,
+    message: 'User partially updated',
+    data: users[index],
+  });
+});
+```
+
+### DELETE — Remove a Resource
+
+```javascript
+app.delete('/api/users/:id', (req, res) => {
+  const { id } = req.params;
+
+  const index = users.findIndex((u) => u.id === parseInt(id));
+
+  if (index === -1) {
+    return res.status(404).json({ success: false, message: 'User not found' });
+  }
+
+  const deleted = users.splice(index, 1);
+
+  res.status(200).json({
+    success: true,
+    message: 'User deleted successfully',
+    data: deleted[0],
+  });
+
+  // OR: res.status(204).end() — no content
+});
+```
+
+### Express Router — Organizing Routes
+
+```javascript
+// routes/userRoutes.js
+const express = require('express');
+const router = express.Router();
+
+let users = [];
+
+router.get('/', (req, res) => res.json({ data: users }));
+router.get('/:id', (req, res) => { /* ... */ });
+router.post('/', (req, res) => { /* ... */ });
+router.put('/:id', (req, res) => { /* ... */ });
+router.patch('/:id', (req, res) => { /* ... */ });
+router.delete('/:id', (req, res) => { /* ... */ });
+
+module.exports = router;
+```
+
+```javascript
+// index.js
+const userRoutes = require('./routes/userRoutes');
+
+app.use('/api/users', userRoutes);
+// Now: GET /api/users, POST /api/users, DELETE /api/users/:id, etc.
+```
+
+---
+
+## 7. Middleware — Introduction
+
+### What is Middleware?
+
+Middleware is a **function** that has access to the `req` (request) object, the `res` (response) object, and the **`next`** function in the application's request-response cycle.
+
+```javascript
+function myMiddleware(req, res, next) {
+  // Do something with req or res
+  console.log('Request received:', req.method, req.url);
+  next(); // Pass control to the next middleware/route handler
+}
+```
+
+> If `next()` is **not called**, the request will hang and the client will time out. Always call `next()` unless you are sending a response.
+
+### The Middleware Pipeline
+
+```
+Request → Middleware 1 → Middleware 2 → Middleware 3 → Route Handler → Response
+              ↓ next()        ↓ next()        ↓ next()
+```
+
+Each middleware can:
+- Execute any code
+- Modify `req` and `res` objects
+- End the request-response cycle (`res.send()`, `res.json()`)
+- Call the next middleware (`next()`)
+- Call `next(err)` to pass an error to the error handler
+
+### Types of Middleware
+
+| Type | Applied With | Scope |
+|---|---|---|
+| Application-level | `app.use()` | Entire application |
+| Router-level | `router.use()` | Specific router/prefix |
+| Built-in | `express.json()` etc. | Built into Express |
+| Third-party | npm packages | Application or router |
+| Error-handling | `app.use(fn)` with 4 params | Entire application |
+
+---
+
+## 8. Application-Level Middleware
+
+Applied using `app.use()` or `app.METHOD()` — runs for **all or specific routes** in the application.
+
+### Global Middleware (All Routes)
+
+```javascript
+const express = require('express');
+const app = express();
+
+// Logger middleware — runs for every request
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+  next();
+});
+
+// All routes below will be affected
+app.get('/api/users', (req, res) => {
+  res.json({ data: [] });
+});
+```
+
+### Route-Specific Middleware
+
+```javascript
+// Authentication check — only for /api/admin
+const checkAdmin = (req, res, next) => {
+  const token = req.headers['authorization'];
+  if (token === 'admin-secret-token') {
+    next(); // Authorized
+  } else {
+    res.status(403).json({ message: 'Forbidden: Admins only' });
+  }
+};
+
+app.get('/api/admin/dashboard', checkAdmin, (req, res) => {
+  res.json({ message: 'Welcome, Admin!' });
+});
+```
+
+### Multiple Middleware in One Route
+
+```javascript
+const logRequest = (req, res, next) => {
+  console.log('Logging...');
+  next();
+};
+
+const validateBody = (req, res, next) => {
+  if (!req.body.name) return res.status(400).json({ error: 'Name required' });
+  next();
+};
+
+app.post('/api/users', logRequest, validateBody, (req, res) => {
+  res.status(201).json({ message: 'User created' });
+});
+```
+
+### Middleware Chaining with `app.use()` on a Path
+
+```javascript
+// This runs for ALL methods on /api/users and sub-paths
+app.use('/api/users', (req, res, next) => {
+  console.log('User route accessed');
+  next();
+});
+```
+
+### Error-Handling Middleware (4 Parameters!)
+
+```javascript
+// MUST have exactly 4 parameters: (err, req, res, next)
+app.use((err, req, res, next) => {
+  console.error('Error:', err.message);
+  res.status(err.status || 500).json({
+    success: false,
+    message: err.message || 'Internal Server Error',
+  });
+});
+
+// In a route, pass errors to it via next(err)
+app.get('/api/data', (req, res, next) => {
+  try {
+    throw new Error('Something went wrong!');
+  } catch (err) {
+    next(err); // Passed to the error handler above
+  }
+});
+```
+
+---
+
+## 9. Router-Level Middleware
+
+Works the same as application-level middleware, but is attached to an **`express.Router()`** instance instead of the `app`.
+
+### Why Use Router-Level Middleware?
+
+- Apply middleware **only to specific groups of routes** (e.g., only for `/api/admin`)
+- Keeps code modular and clean
+- Each router is like a "mini-application"
+
+### Basic Router Middleware
+
+```javascript
+// routes/productRoutes.js
+const express = require('express');
+const router = express.Router();
+
+// Middleware — only runs for routes in this router
+router.use((req, res, next) => {
+  console.log('Product route hit:', req.method, req.url);
+  next();
+});
+
+router.get('/', (req, res) => res.json({ message: 'All products' }));
+router.get('/:id', (req, res) => res.json({ message: `Product ${req.params.id}` }));
+router.post('/', (req, res) => res.json({ message: 'Product created' }));
+
+module.exports = router;
+```
+
+```javascript
+// index.js
+const productRoutes = require('./routes/productRoutes');
+app.use('/api/products', productRoutes);
+```
+
+### Auth Guard at Router Level
+
+```javascript
+// routes/adminRoutes.js
+const express = require('express');
+const router = express.Router();
+
+// Auth middleware applies to ALL routes in this router
+router.use((req, res, next) => {
+  const token = req.headers['authorization'];
+  if (!token || token !== 'Bearer mysecret') {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
+  next();
+});
+
+router.get('/dashboard', (req, res) => {
+  res.json({ message: 'Admin Dashboard' });
+});
+
+router.delete('/user/:id', (req, res) => {
+  res.json({ message: `Deleted user ${req.params.id}` });
+});
+
+module.exports = router;
+```
+
+### Using `router.param()` — Parameter Middleware
+
+```javascript
+// Runs whenever `:userId` is present in the route
+router.param('userId', (req, res, next, id) => {
+  const user = users.find((u) => u.id === parseInt(id));
+  if (!user) return res.status(404).json({ message: 'User not found' });
+  req.user = user; // Attach to req for downstream handlers
+  next();
+});
+
+router.get('/:userId', (req, res) => {
+  res.json(req.user); // Already validated and attached
+});
+```
+
+---
+
+## 10. Built-in Middleware
+
+Express 4.x+ includes several useful middleware functions out of the box (no extra npm install needed).
+
+### `express.json()`
+
+Parses incoming requests with **JSON payloads** (`Content-Type: application/json`).
+
+```javascript
+app.use(express.json());
+
+// Now req.body is populated for POST/PUT/PATCH with JSON body
+app.post('/api/data', (req, res) => {
+  console.log(req.body); // { name: "Arjun", age: 25 }
+  res.json(req.body);
+});
+```
+
+### `express.urlencoded()`
+
+Parses **URL-encoded** form data (`Content-Type: application/x-www-form-urlencoded`). Used for HTML form submissions.
+
+```javascript
+app.use(express.urlencoded({ extended: true }));
+// extended: true  → uses 'qs' library (supports nested objects)
+// extended: false → uses 'querystring' library (flat data only)
+```
+
+### `express.static()`
+
+Serves **static files** (HTML, CSS, JS, images) from a directory.
+
+```javascript
+app.use(express.static('public'));
+// Files in /public are served at the root URL
+// public/index.html → http://localhost:3000/index.html
+// public/style.css  → http://localhost:3000/style.css
+
+// With a virtual prefix
+app.use('/static', express.static('public'));
+// public/logo.png → http://localhost:3000/static/logo.png
+```
+
+### `express.raw()`
+
+Parses incoming requests with raw **Buffer** payloads.
+
+```javascript
+app.use(express.raw({ type: 'application/octet-stream' }));
+// req.body is now a Buffer
+```
+
+### `express.text()`
+
+Parses incoming requests with **plain text** payloads.
+
+```javascript
+app.use(express.text());
+// req.body is a string
+```
+
+### Summary Table
+
+| Middleware | Purpose | Default Content-Type |
+|---|---|---|
+| `express.json()` | Parse JSON body | `application/json` |
+| `express.urlencoded()` | Parse form data | `application/x-www-form-urlencoded` |
+| `express.static()` | Serve static files | N/A |
+| `express.raw()` | Parse raw buffer | `application/octet-stream` |
+| `express.text()` | Parse plain text | `text/plain` |
+
+---
+
+## 11. Third-Party Middleware
+
+Installed via npm, these add powerful features to your Express app.
+
+### `morgan` — HTTP Request Logger
+
+```bash
+npm install morgan
+```
+
+```javascript
+const morgan = require('morgan');
+
+// Formats: 'tiny', 'short', 'dev', 'combined', 'common'
+app.use(morgan('dev'));
+
+// Output: GET /api/users 200 5.123 ms - 128
+```
+
+Custom token:
+
+```javascript
+morgan.token('body', (req) => JSON.stringify(req.body));
+app.use(morgan(':method :url :status :body'));
+```
+
+### `cors` — Cross-Origin Resource Sharing
+
+```bash
+npm install cors
+```
+
+```javascript
+const cors = require('cors');
+
+// Allow all origins
+app.use(cors());
+
+// Restrict to specific origins
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://myapp.com'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // Allow cookies
+}));
+
+// Apply CORS only to specific route
+app.get('/api/public', cors(), (req, res) => {
+  res.json({ message: 'This route allows all origins' });
+});
+```
+
+### `helmet` — Security Headers
+
+```bash
+npm install helmet
+```
+
+```javascript
+const helmet = require('helmet');
+
+// Sets security-related HTTP headers automatically
+app.use(helmet());
+// Sets: X-Content-Type-Options, X-Frame-Options, X-XSS-Protection,
+//       Strict-Transport-Security, Content-Security-Policy, etc.
+```
+
+### `express-rate-limit` — Rate Limiting
+
+```bash
+npm install express-rate-limit
+```
+
+```javascript
+const rateLimit = require('express-rate-limit');
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100,                   // Limit each IP to 100 requests per window
+  message: { error: 'Too many requests, please try again later.' },
+  standardHeaders: true,      // Send RateLimit headers
+  legacyHeaders: false,
+});
+
+app.use('/api/', limiter);
+```
+
+### `multer` — File Upload Handling
+
+```bash
+npm install multer
+```
+
+```javascript
+const multer = require('multer');
+
+// Store in memory
+const upload = multer({ dest: 'uploads/' });
+
+// Single file upload
+app.post('/api/upload', upload.single('avatar'), (req, res) => {
+  console.log(req.file);   // Uploaded file info
+  console.log(req.body);   // Other form fields
+  res.json({ message: 'File uploaded', file: req.file });
+});
+
+// Multiple files
+app.post('/api/upload-many', upload.array('photos', 5), (req, res) => {
+  res.json({ files: req.files });
+});
+```
+
+### `cookie-parser` — Parse Cookies
+
+```bash
+npm install cookie-parser
+```
+
+```javascript
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
+app.get('/set-cookie', (req, res) => {
+  res.cookie('username', 'Arjun', { maxAge: 3600000, httpOnly: true });
+  res.json({ message: 'Cookie set' });
+});
+
+app.get('/get-cookie', (req, res) => {
+  console.log(req.cookies); // { username: 'Arjun' }
+  res.json(req.cookies);
+});
+```
+
+### `compression` — GZIP Compression
+
+```bash
+npm install compression
+```
+
+```javascript
+const compression = require('compression');
+app.use(compression());
+// Compresses all responses using gzip → faster transfers
+```
+
+### Third-Party Middleware Summary
+
+| Package | Purpose |
+|---|---|
+| `morgan` | HTTP request logging |
+| `cors` | Cross-origin resource sharing |
+| `helmet` | Security HTTP headers |
+| `express-rate-limit` | Rate limiting / DDoS protection |
+| `multer` | File upload handling |
+| `cookie-parser` | Parse `Cookie` headers |
+| `compression` | GZIP compress responses |
+| `express-validator` | Input validation |
+| `passport` | Authentication strategies |
+| `express-session` | Session management |
+
+---
+
+## 12. Interview Questions & Answers
+
+### Express & API
+
+**Q1. What is Express.js and why is it used?**  
+Express.js is a minimal and flexible Node.js web framework that provides a robust set of features for building web and mobile applications. It simplifies routing, request/response handling, and middleware integration compared to raw Node.js.
+
+**Q2. What is the difference between `app.use()` and `app.get()`?**  
+`app.use()` registers middleware that runs for **all HTTP methods** and can optionally be scoped to a path prefix. `app.get()` only handles **GET** requests for a specific path.
+
+**Q3. What is the difference between `req.params`, `req.query`, and `req.body`?**
+- `req.params` — Named route segments: `/users/:id` → `req.params.id`
+- `req.query` — URL query string: `/users?page=2` → `req.query.page`
+- `req.body` — Data sent in the request body (POST/PUT), requires `express.json()` middleware
+
+**Q4. What is the difference between PUT and PATCH?**  
+PUT replaces the **entire** resource with the provided data (missing fields are removed or set to null). PATCH makes a **partial update**, only modifying the fields provided.
+
+**Q5. What HTTP status code do you return when creating a resource?**  
+`201 Created`. It signals that the request succeeded and a new resource was created.
+
+**Q6. What is REST? Is Express RESTful by default?**  
+REST is an architectural style with 6 constraints (stateless, client-server, cacheable, uniform interface, layered, code on demand). Express is a framework — it can be used to build RESTful APIs, but it doesn't enforce REST by itself. You must follow the principles manually.
+
+---
+
+### Middleware
+
+**Q7. What is middleware in Express.js?**  
+A middleware is a function with `(req, res, next)` that executes during the request-response cycle. It can modify `req`/`res`, execute code, end the cycle, or call `next()` to pass control to the next middleware.
+
+**Q8. What happens if you don't call `next()` in middleware?**  
+The request will hang indefinitely. The client will eventually time out because no response was sent and no further middleware or route handler was invoked.
+
+**Q9. What is the difference between application-level and router-level middleware?**  
+Application-level middleware is attached to the `app` object using `app.use()` and applies to all routes. Router-level middleware is attached to an `express.Router()` instance and only applies to routes defined in that router.
+
+**Q10. How do you create an error-handling middleware in Express?**  
+Error-handling middleware must have **exactly 4 parameters**: `(err, req, res, next)`. Express identifies it as an error handler by this signature. It is called when `next(err)` is invoked in any route or middleware.
+
+```javascript
+app.use((err, req, res, next) => {
+  res.status(500).json({ error: err.message });
+});
+```
+
+**Q11. What is the difference between `express.json()` and `express.urlencoded()`?**  
+`express.json()` parses request bodies with `Content-Type: application/json` (JSON data). `express.urlencoded()` parses bodies with `Content-Type: application/x-www-form-urlencoded` (HTML form submissions).
+
+**Q12. What does `helmet` middleware do?**  
+`helmet` automatically sets various HTTP security headers (like `X-Content-Type-Options`, `X-Frame-Options`, `Strict-Transport-Security`) to protect the app from common web vulnerabilities like clickjacking, MIME sniffing, and more.
+
+**Q13. What does CORS middleware solve?**  
+CORS (Cross-Origin Resource Sharing) middleware adds the appropriate HTTP headers to allow (or restrict) browsers from making requests to your API from a **different origin** (domain, port, or protocol) than where the frontend is hosted.
+
+**Q14. What is `router.param()` used for?**  
+`router.param()` defines a middleware callback that runs whenever a specific named route parameter (e.g., `:userId`) is present in a route. It's used for pre-validation or pre-fetching of resources associated with route parameters.
+
+**Q15. How does middleware ordering matter in Express?**  
+Middleware is executed in the order it is defined with `app.use()`. Middleware defined before routes applies to those routes; middleware defined after a route won't apply to it. Error-handling middleware should always be defined **last**, after all routes.
+
+```javascript
+app.use(morgan('dev'));         // 1st — logging
+app.use(express.json());        // 2nd — parsing
+app.use('/api', routes);        // 3rd — routes
+app.use(errorHandler);          // 4th (last) — error handling
+```
+
+---
+
+*End of Notes — Node.js API Design & Middleware*
