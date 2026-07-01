@@ -23,7 +23,7 @@
 19. Best Practices
 
 ---
-
+[handboook](https://cwh-full-next-space.fra1.cdn.digitaloceanspaces.com/YouTube/MongoDB%20Handbook.pdf)
 # 1. Introduction
 
 MongoDB is a:
