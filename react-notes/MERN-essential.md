@@ -2308,3 +2308,304 @@ git push origin --tags
 # 2-Minute Interview Summary
 
 > Git is a distributed version control system that helps developers track code changes, collaborate efficiently, and maintain project history. It allows developers to create branches, commit changes, merge code, and revert to previous versions when needed. GitHub is a cloud-based platform that hosts Git repositories and provides collaboration features such as pull requests, issue tracking, and CI/CD integration. A typical Git workflow involves initializing or cloning a repository, making changes, staging them with `git add`, committing them with `git commit`, and synchronizing with GitHub using `git push` and `git pull`. By using branches, developers can work on features independently and merge them safely into the main branch after review.
+
+
+---
+# Postman - Interview Notes
+
+## What is Postman?
+
+**Postman** is an API testing tool used to send HTTP requests to a server and verify the responses without writing frontend code.
+
+It is mainly used by developers and QA engineers to test REST APIs.
+
+---
+
+# Why Do We Use Postman?
+
+- Test REST APIs
+- Verify backend functionality
+- Debug APIs
+- Check request and response data
+- Test authentication (JWT, OAuth, API Keys)
+
+---
+
+# How Postman Works
+
+```
+Client (Postman)
+      │
+HTTP Request
+      │
+      ▼
+Spring Boot REST API
+      │
+Business Logic
+      │
+Database
+      │
+      ▼
+HTTP Response (JSON)
+```
+
+---
+
+# HTTP Methods Used in Postman
+
+| Method | Purpose |
+|---------|---------|
+| GET | Retrieve data |
+| POST | Create data |
+| PUT | Update entire resource |
+| PATCH | Partial update |
+| DELETE | Delete data |
+
+---
+
+# Parts of a Request
+
+Every request contains:
+
+### URL
+
+```
+http://localhost:8080/api/users
+```
+
+### HTTP Method
+
+```
+GET
+POST
+PUT
+DELETE
+PATCH
+```
+
+### Headers
+
+Example
+
+```http
+Content-Type: application/json
+
+Authorization: Bearer <JWT_TOKEN>
+```
+
+### Body
+
+Used with POST, PUT and PATCH.
+
+Example
+
+```json
+{
+   "name":"John",
+   "email":"john@example.com"
+}
+```
+
+---
+
+# Parts of a Response
+
+A response contains
+
+- Status Code
+- Headers
+- Response Body (JSON)
+
+Example
+
+```http
+200 OK
+```
+
+```json
+{
+   "id":1,
+   "name":"John"
+}
+```
+
+---
+
+# Common HTTP Status Codes
+
+| Code | Meaning |
+|------|----------|
+| 200 | OK |
+| 201 | Created |
+| 204 | No Content |
+| 400 | Bad Request |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not Found |
+| 500 | Internal Server Error |
+
+---
+
+# Testing JWT APIs
+
+After login,
+
+Server returns
+
+```json
+{
+   "token":"eyJhbGc..."
+}
+```
+
+Copy the token.
+
+Go to
+
+```
+Authorization
+
+↓
+
+Bearer Token
+
+↓
+
+Paste JWT
+```
+
+or manually add:
+
+```http
+Authorization: Bearer eyJhbGc...
+```
+
+Now click **Send**.
+
+If the token is valid:
+
+```
+200 OK
+```
+
+If invalid:
+
+```
+401 Unauthorized
+```
+
+---
+
+# Collections
+
+A Collection is a folder that stores multiple API requests.
+
+Example
+
+```
+User APIs
+
+├── GET Users
+├── POST User
+├── PUT User
+└── DELETE User
+```
+
+Collections help organize and reuse requests.
+
+---
+
+# Environment Variables
+
+Instead of writing
+
+```
+http://localhost:8080
+```
+
+every time,
+
+create
+
+```
+baseUrl = http://localhost:8080
+```
+
+Use
+
+```
+{{baseUrl}}/api/users
+```
+
+This makes switching between development, testing, and production environments easier.
+
+---
+
+# How I Use Postman in a Spring Boot Project
+
+1. Run the Spring Boot application.
+2. Open Postman.
+3. Select the HTTP method.
+4. Enter the API URL.
+5. Add headers if required.
+6. Add the request body for POST/PUT/PATCH.
+7. Click **Send**.
+8. Verify the response status and JSON data.
+9. For secured APIs, add the JWT token in the Authorization header.
+
+---
+
+# Interview Questions
+
+## What is Postman?
+
+Postman is an API testing tool used to send HTTP requests, test REST APIs, inspect responses, and debug backend services.
+
+---
+
+## Why is Postman used?
+
+- API Testing
+- Backend Development
+- Debugging
+- Verifying Request and Response
+- Testing JWT Authentication
+
+---
+
+## What is a Collection?
+
+A Collection is a group of saved API requests that helps organize and reuse APIs.
+
+---
+
+## What are Environment Variables?
+
+Environment variables store reusable values such as:
+
+- Base URL
+- JWT Token
+- API Keys
+
+Example:
+
+```
+{{baseUrl}}
+{{token}}
+```
+
+---
+
+## How do you test a secured API?
+
+1. Login using the `/login` API.
+2. Copy the JWT token from the response.
+3. Add it as a **Bearer Token** in the Authorization tab.
+4. Send the request to the protected API.
+5. If the token is valid, the server returns `200 OK`; otherwise, it returns `401 Unauthorized`.
+
+---
+
+## 1-Minute Interview Answer
+
+> Postman is an API testing tool that allows developers to send HTTP requests to a server and inspect responses without needing a frontend application. It supports all HTTP methods such as GET, POST, PUT, PATCH, and DELETE. In my Spring Boot projects, I use Postman to test REST APIs by sending requests with JSON payloads, verifying HTTP status codes and responses, and testing secured endpoints using JWT Bearer Tokens. I also use Collections to organize APIs and Environment Variables to manage values like the base URL and authentication tokens.
