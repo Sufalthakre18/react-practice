@@ -1251,3 +1251,1060 @@ To reduce the risk of misuse if a token is stolen.
 # 2-Minute Interview Summary
 
 > JWT (JSON Web Token) is an open standard used for secure authentication and authorization. After a user logs in successfully, the server generates a signed JWT containing user-related claims such as the user ID and role. The client stores the token and sends it with each request in the `Authorization: Bearer <token>` header. The server verifies the token's signature and expiration before granting access. A JWT consists of three parts: Header, Payload, and Signature. Because JWT is stateless, the server does not maintain session data, making it highly scalable and ideal for REST APIs and microservices. For security, JWTs should be transmitted over HTTPS, have short expiration times, and avoid storing sensitive information in the payload.
+
+---
+
+# Git & GitHub - Complete Interview Notes
+
+# Table of Contents
+
+1. Introduction
+2. What is Git?
+3. What is GitHub?
+4. Git vs GitHub
+5. Why Use Git?
+6. Git Workflow
+7. Installing Git
+8. Git Configuration
+9. Creating Repository
+10. Git Lifecycle
+11. Basic Git Commands
+12. Branching
+13. Merging
+14. Merge Conflicts
+15. Remote Repository
+16. GitHub Workflow
+17. Stashing
+18. Undo Operations
+19. Viewing History
+20. Tags
+21. .gitignore
+22. Git Best Practices
+23. Git Interview Questions
+24. Complete Git Cheat Sheet
+
+---
+
+# What is Git?
+
+**Git** is a **Distributed Version Control System (DVCS)** used to track changes in source code during software development.
+
+Git allows multiple developers to work on the same project without overwriting each other's work.
+
+It was created by **Linus Torvalds** in 2005.
+
+---
+
+# What is GitHub?
+
+**GitHub** is a cloud-based platform that hosts Git repositories.
+
+Git manages version control locally.
+
+GitHub stores repositories online and enables:
+
+- Collaboration
+- Code sharing
+- Pull Requests
+- Code Reviews
+- CI/CD Integration
+- Issue Tracking
+
+---
+
+# Git vs GitHub
+
+| Git | GitHub |
+|------|---------|
+| Version Control System | Cloud Hosting Platform |
+| Works locally | Works online |
+| Tracks code changes | Stores repositories |
+| Free and Open Source | Provides collaboration tools |
+
+---
+
+# Why Use Git?
+
+- Track code changes
+- Collaboration
+- Backup code
+- Branching
+- Easy rollback
+- Faster development
+- Version history
+
+---
+
+# Git Workflow
+
+```
+Working Directory
+        │
+        ▼
+Staging Area
+        │
+        ▼
+Local Repository
+        │
+        ▼
+Remote Repository (GitHub)
+```
+
+---
+
+# Install Git
+
+Windows
+
+Download:
+
+https://git-scm.com/
+
+Verify Installation
+
+```bash
+git --version
+```
+
+Example
+
+```
+git version 2.45.0
+```
+
+---
+
+# Configure Git
+
+Set Username
+
+```bash
+git config --global user.name "John Doe"
+```
+
+Set Email
+
+```bash
+git config --global user.email "john@example.com"
+```
+
+View Configuration
+
+```bash
+git config --list
+```
+
+---
+
+# Create a Git Repository
+
+Navigate to project
+
+```bash
+cd MyProject
+```
+
+Initialize Git
+
+```bash
+git init
+```
+
+Output
+
+```
+Initialized empty Git repository
+```
+
+---
+
+# Git Lifecycle
+
+```
+Untracked
+
+↓
+
+Tracked
+
+↓
+
+Modified
+
+↓
+
+Staged
+
+↓
+
+Committed
+```
+
+---
+
+# Check Repository Status
+
+```bash
+git status
+```
+
+Shows
+
+- Modified files
+- Staged files
+- Untracked files
+
+---
+
+# Add Files
+
+Add Single File
+
+```bash
+git add app.js
+```
+
+Add Multiple Files
+
+```bash
+git add file1 file2
+```
+
+Add Entire Project
+
+```bash
+git add .
+```
+
+---
+
+# Commit Changes
+
+```bash
+git commit -m "Initial commit"
+```
+
+Example
+
+```bash
+git commit -m "Added login feature"
+```
+
+---
+
+# View Commit History
+
+```bash
+git log
+```
+
+Short Version
+
+```bash
+git log --oneline
+```
+
+Graph View
+
+```bash
+git log --graph
+```
+
+Compact Graph
+
+```bash
+git log --oneline --graph --all
+```
+
+---
+
+# Clone Repository
+
+```bash
+git clone https://github.com/user/project.git
+```
+
+Example
+
+```bash
+git clone https://github.com/john/ecommerce.git
+```
+
+---
+
+# Connect Local Project to GitHub
+
+Add Remote
+
+```bash
+git remote add origin https://github.com/user/project.git
+```
+
+Check Remote
+
+```bash
+git remote -v
+```
+
+---
+
+# Push Code
+
+First Push
+
+```bash
+git push -u origin main
+```
+
+Next Push
+
+```bash
+git push
+```
+
+---
+
+# Pull Latest Code
+
+```bash
+git pull
+```
+
+Specific Branch
+
+```bash
+git pull origin main
+```
+
+---
+
+# Fetch Changes
+
+```bash
+git fetch
+```
+
+Difference
+
+```
+git fetch
+
+↓
+
+Downloads changes
+
+Does NOT merge
+```
+
+```
+git pull
+
+↓
+
+Downloads
+
++
+
+Merges
+```
+
+---
+
+# Branching
+
+Create Branch
+
+```bash
+git branch feature-login
+```
+
+List Branches
+
+```bash
+git branch
+```
+
+Switch Branch
+
+```bash
+git checkout feature-login
+```
+
+Create and Switch
+
+```bash
+git checkout -b feature-login
+```
+
+Using Modern Command
+
+```bash
+git switch feature-login
+```
+
+Create and Switch
+
+```bash
+git switch -c feature-login
+```
+
+---
+
+# Merge Branch
+
+Switch to Main
+
+```bash
+git checkout main
+```
+
+Merge
+
+```bash
+git merge feature-login
+```
+
+---
+
+# Delete Branch
+
+```bash
+git branch -d feature-login
+```
+
+Force Delete
+
+```bash
+git branch -D feature-login
+```
+
+---
+
+# Merge Conflict
+
+Occurs when two branches modify the same lines of a file.
+
+Example
+
+```
+<<<<<<< HEAD
+
+Your Code
+
+=======
+
+Other Branch Code
+
+>>>>>>> feature-login
+```
+
+Steps
+
+1. Resolve manually
+2. Save file
+3. Add file
+
+```bash
+git add .
+```
+
+Commit
+
+```bash
+git commit
+```
+
+---
+
+# Git Stash
+
+Save Current Work
+
+```bash
+git stash
+```
+
+List Stash
+
+```bash
+git stash list
+```
+
+Apply Latest
+
+```bash
+git stash apply
+```
+
+Apply and Remove
+
+```bash
+git stash pop
+```
+
+Delete Stash
+
+```bash
+git stash drop
+```
+
+Clear All
+
+```bash
+git stash clear
+```
+
+---
+
+# Remove File from Staging
+
+```bash
+git restore --staged file.txt
+```
+
+---
+
+# Undo File Changes
+
+```bash
+git restore file.txt
+```
+
+---
+
+# Undo Last Commit
+
+Keep Changes
+
+```bash
+git reset --soft HEAD~1
+```
+
+Remove Changes
+
+```bash
+git reset --hard HEAD~1
+```
+
+---
+
+# Revert Commit
+
+```bash
+git revert COMMIT_ID
+```
+
+---
+
+# Rename Branch
+
+```bash
+git branch -m new-name
+```
+
+---
+
+# Delete Remote Branch
+
+```bash
+git push origin --delete feature-login
+```
+
+---
+
+# View Differences
+
+Working Directory
+
+```bash
+git diff
+```
+
+Staged
+
+```bash
+git diff --staged
+```
+
+Between Commits
+
+```bash
+git diff commit1 commit2
+```
+
+---
+
+# Ignore Files
+
+Create
+
+```
+.gitignore
+```
+
+Example
+
+```
+node_modules/
+
+.env
+
+dist/
+
+*.log
+
+*.class
+```
+
+---
+
+# Remove Tracked File
+
+```bash
+git rm file.txt
+```
+
+Keep File Locally
+
+```bash
+git rm --cached file.txt
+```
+
+---
+
+# Tags
+
+Create
+
+```bash
+git tag v1.0
+```
+
+Annotated
+
+```bash
+git tag -a v1.0 -m "Version 1"
+```
+
+List
+
+```bash
+git tag
+```
+
+Push Tags
+
+```bash
+git push origin --tags
+```
+
+---
+
+# GitHub Workflow
+
+## Step 1
+
+Create Repository on GitHub
+
+↓
+
+## Step 2
+
+Clone Repository
+
+```bash
+git clone URL
+```
+
+↓
+
+## Step 3
+
+Create Branch
+
+```bash
+git checkout -b feature-login
+```
+
+↓
+
+## Step 4
+
+Write Code
+
+↓
+
+## Step 5
+
+Check Status
+
+```bash
+git status
+```
+
+↓
+
+## Step 6
+
+Add Files
+
+```bash
+git add .
+```
+
+↓
+
+## Step 7
+
+Commit
+
+```bash
+git commit -m "Added login"
+```
+
+↓
+
+## Step 8
+
+Push Branch
+
+```bash
+git push origin feature-login
+```
+
+↓
+
+## Step 9
+
+Create Pull Request
+
+↓
+
+## Step 10
+
+Code Review
+
+↓
+
+## Step 11
+
+Merge into Main
+
+↓
+
+## Step 12
+
+Pull Latest Changes
+
+```bash
+git checkout main
+git pull origin main
+```
+
+---
+
+# Complete Git Flow (New Project)
+
+## Create Project
+
+```bash
+mkdir Demo
+```
+
+Move Inside
+
+```bash
+cd Demo
+```
+
+Initialize Git
+
+```bash
+git init
+```
+
+Create File
+
+```bash
+touch README.md
+```
+
+Check Status
+
+```bash
+git status
+```
+
+Stage Files
+
+```bash
+git add .
+```
+
+Commit
+
+```bash
+git commit -m "Initial Commit"
+```
+
+Create GitHub Repository
+
+Connect Remote
+
+```bash
+git remote add origin https://github.com/user/demo.git
+```
+
+Push
+
+```bash
+git branch -M main
+git push -u origin main
+```
+
+Done!
+
+---
+
+# Everyday Git Commands
+
+```bash
+git pull
+
+git status
+
+git add .
+
+git commit -m "message"
+
+git push
+```
+
+---
+
+# Useful Commands
+
+Current Branch
+
+```bash
+git branch --show-current
+```
+
+Show Remote
+
+```bash
+git remote -v
+```
+
+Show Commit
+
+```bash
+git show
+```
+
+File History
+
+```bash
+git log filename
+```
+
+Search Commit
+
+```bash
+git log --grep="login"
+```
+
+Show Author
+
+```bash
+git shortlog
+```
+
+---
+
+# Best Practices
+
+- Commit frequently
+- Write meaningful commit messages
+- Pull before pushing
+- Use feature branches
+- Never commit secrets or passwords
+- Add `.gitignore`
+- Keep commits small and focused
+- Review changes before committing (`git diff`)
+
+---
+
+# Common Interview Questions
+
+## What is Git?
+
+Git is a distributed version control system that tracks changes in source code and enables collaboration among developers.
+
+---
+
+## What is GitHub?
+
+GitHub is a cloud platform that hosts Git repositories and provides collaboration features like Pull Requests, Issues, and Actions.
+
+---
+
+## Difference Between Git Pull and Git Fetch
+
+| Git Pull | Git Fetch |
+|----------|-----------|
+| Downloads and merges changes | Downloads changes only |
+| Updates local branch | Does not modify local branch |
+
+---
+
+## Difference Between Merge and Rebase
+
+| Merge | Rebase |
+|--------|--------|
+| Preserves commit history | Rewrites commit history |
+| Creates a merge commit | Produces a linear history |
+
+---
+
+## Difference Between Reset and Revert
+
+| Reset | Revert |
+|--------|--------|
+| Moves branch pointer | Creates a new commit that undoes changes |
+| Can rewrite history | Preserves history |
+
+---
+
+## What is HEAD?
+
+`HEAD` is a pointer to the current branch and the latest checked-out commit.
+
+---
+
+## What is a Commit?
+
+A commit is a snapshot of the project at a specific point in time.
+
+---
+
+## What is Staging Area?
+
+The staging area (index) is an intermediate place where changes are prepared before committing.
+
+---
+
+## What is Branching?
+
+Branching allows independent development of features without affecting the main codebase.
+
+---
+
+## What is a Pull Request (PR)?
+
+A Pull Request is a request to merge changes from one branch into another after review.
+
+---
+
+# Git Cheat Sheet
+
+## Setup
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your@email.com"
+git --version
+```
+
+## Repository
+
+```bash
+git init
+git clone URL
+```
+
+## Status
+
+```bash
+git status
+```
+
+## Staging
+
+```bash
+git add .
+git add filename
+```
+
+## Commit
+
+```bash
+git commit -m "message"
+```
+
+## Branches
+
+```bash
+git branch
+git branch branch-name
+git checkout branch-name
+git checkout -b branch-name
+git switch branch-name
+git switch -c branch-name
+```
+
+## Merge
+
+```bash
+git merge branch-name
+```
+
+## Push & Pull
+
+```bash
+git push
+git push -u origin main
+git pull
+git fetch
+```
+
+## Logs
+
+```bash
+git log
+git log --oneline
+git show
+```
+
+## Undo
+
+```bash
+git restore file
+git restore --staged file
+git reset --soft HEAD~1
+git reset --hard HEAD~1
+git revert COMMIT_ID
+```
+
+## Stash
+
+```bash
+git stash
+git stash list
+git stash apply
+git stash pop
+```
+
+## Tags
+
+```bash
+git tag
+git tag v1.0
+git push origin --tags
+```
+
+---
+
+# 2-Minute Interview Summary
+
+> Git is a distributed version control system that helps developers track code changes, collaborate efficiently, and maintain project history. It allows developers to create branches, commit changes, merge code, and revert to previous versions when needed. GitHub is a cloud-based platform that hosts Git repositories and provides collaboration features such as pull requests, issue tracking, and CI/CD integration. A typical Git workflow involves initializing or cloning a repository, making changes, staging them with `git add`, committing them with `git commit`, and synchronizing with GitHub using `git push` and `git pull`. By using branches, developers can work on features independently and merge them safely into the main branch after review.
