@@ -628,3 +628,626 @@ PATCH
 # 2-Minute Interview Summary
 
 > REST API (Representational State Transfer Application Programming Interface) is an architectural style for designing web services. It enables communication between clients and servers using the HTTP protocol. Resources are identified by URLs and manipulated using standard HTTP methods like GET, POST, PUT, PATCH, and DELETE. REST follows principles such as client-server architecture, stateless communication, resource-based URLs, a uniform interface, cacheable responses, and a layered system. Data is typically exchanged in JSON format. Due to its simplicity, scalability, and lightweight nature, REST APIs are widely used in modern web, mobile, and cloud applications.
+
+
+---
+
+# JWT (JSON Web Token) - Interview Notes
+
+## What is JWT?
+
+**JWT (JSON Web Token)** is an open standard (RFC 7519) used to securely transmit information between two parties as a JSON object.
+
+JWT is commonly used for:
+
+- Authentication
+- Authorization
+- Secure information exchange
+
+After a user successfully logs in, the server generates a JWT and sends it to the client. The client stores the token (typically in memory or an HttpOnly cookie) and includes it with future requests. The server validates the token before granting access to protected resources.
+
+---
+
+# Why Do We Need JWT?
+
+Without JWT, the server would need to maintain session data for every logged-in user.
+
+JWT enables **stateless authentication**, meaning:
+
+- The server does not store user session information.
+- Each request contains the token needed to identify the user.
+
+Benefits:
+
+- Highly scalable
+- Suitable for distributed systems and microservices
+- Reduces server-side session storage
+
+---
+
+# How JWT Authentication Works
+
+```
+        Login Request
+Client -----------------------> Server
+          username/password
+
+                    Validate User
+                          │
+                          ▼
+                Generate JWT Token
+                          │
+                          ▼
+Client <----------------------- Server
+         JWT Token
+
+Store Token
+
+Future Requests
+
+Client -----------------------> Server
+Authorization: Bearer JWT_TOKEN
+
+                    Verify Token
+
+If Valid
+↓
+
+Return Protected Resource
+```
+
+---
+
+# JWT Structure
+
+A JWT consists of **three parts** separated by dots (`.`).
+
+```
+xxxxx.yyyyy.zzzzz
+```
+
+These parts are:
+
+1. Header
+2. Payload
+3. Signature
+
+Example:
+
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+.
+eyJ1c2VySWQiOjEwMSwibmFtZSI6IkpvaG4ifQ
+.
+SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+```
+
+---
+
+# 1. Header
+
+The header contains metadata about the token.
+
+Example:
+
+```json
+{
+    "alg": "HS256",
+    "typ": "JWT"
+}
+```
+
+Meaning:
+
+- `alg` → Signing algorithm
+- `typ` → Token type (JWT)
+
+The header is Base64URL encoded.
+
+---
+
+# 2. Payload
+
+The payload contains the claims (data).
+
+Example:
+
+```json
+{
+    "userId":101,
+    "username":"john",
+    "role":"ADMIN"
+}
+```
+
+The payload may contain:
+
+- User ID
+- Username
+- Email
+- Role
+- Permissions
+- Expiration Time
+
+Example with standard claims:
+
+```json
+{
+    "sub":"101",
+    "name":"John",
+    "iat":1710000000,
+    "exp":1710003600
+}
+```
+
+### Common JWT Claims
+
+| Claim | Meaning |
+|--------|---------|
+| sub | Subject (User ID) |
+| iss | Issuer |
+| aud | Audience |
+| exp | Expiration Time |
+| iat | Issued At |
+| nbf | Not Before |
+
+**Important:** The payload is encoded, **not encrypted**, so it should never contain sensitive information such as passwords.
+
+---
+
+# 3. Signature
+
+The signature ensures the token has not been modified.
+
+Example:
+
+```
+HMACSHA256(
+    Base64Url(Header) +
+    "." +
+    Base64Url(Payload),
+    SecretKey
+)
+```
+
+Example:
+
+```
+Signature =
+HMACSHA256(
+header.payload,
+secret_key
+)
+```
+
+If someone changes the payload, the signature becomes invalid.
+
+---
+
+# JWT Generation Process
+
+```
+Header
+
+↓
+
+Base64 Encode
+
+↓
+
+Payload
+
+↓
+
+Base64 Encode
+
+↓
+
+Header.Payload
+
+↓
+
+Sign with Secret Key
+
+↓
+
+JWT Token
+```
+
+---
+
+# Authentication Flow
+
+## Step 1
+
+Client sends login request.
+
+```http
+POST /login
+```
+
+Body
+
+```json
+{
+    "username":"john",
+    "password":"password123"
+}
+```
+
+---
+
+## Step 2
+
+Server validates credentials.
+
+If valid:
+
+Generate JWT.
+
+---
+
+## Step 3
+
+Server returns token.
+
+```json
+{
+    "token":"eyJhbGciOi..."
+}
+```
+
+---
+
+## Step 4
+
+Client stores token.
+
+Common storage options:
+
+- Memory (recommended for SPAs)
+- HttpOnly Secure Cookie (recommended for web apps)
+- Local Storage (possible but vulnerable to XSS if misused)
+
+---
+
+## Step 5
+
+Client sends token in every request.
+
+```http
+GET /users
+
+Authorization: Bearer eyJhbGciOi...
+```
+
+---
+
+## Step 6
+
+Server verifies token.
+
+If valid:
+
+```
+Return Data
+```
+
+Else:
+
+```
+401 Unauthorized
+```
+
+---
+
+# Authorization Header
+
+JWT is usually sent using the Authorization header.
+
+```http
+Authorization: Bearer <JWT_TOKEN>
+```
+
+Example:
+
+```http
+GET /products
+
+Authorization: Bearer eyJhbGc...
+```
+
+---
+
+# JWT Example
+
+Payload
+
+```json
+{
+    "id":1,
+    "name":"Alice",
+    "role":"ADMIN"
+}
+```
+
+Generated JWT
+
+```
+xxxxx.yyyyy.zzzzz
+```
+
+Request
+
+```http
+GET /orders
+
+Authorization: Bearer xxxxx.yyyyy.zzzzz
+```
+
+---
+
+# Token Expiration
+
+JWTs should have an expiration time.
+
+Example:
+
+```json
+{
+    "exp":1710003600
+}
+```
+
+If expired:
+
+```
+401 Unauthorized
+```
+
+The user must log in again or use a refresh token.
+
+---
+
+# Access Token vs Refresh Token
+
+| Access Token | Refresh Token |
+|--------------|---------------|
+| Short-lived | Long-lived |
+| Used for API requests | Used to obtain a new access token |
+| Expires quickly | Stored more securely |
+| Sent with every request | Used only when renewing access |
+
+Example:
+
+```
+Access Token
+
+Expires in
+
+15 minutes
+
+↓
+
+Refresh Token
+
+Expires in
+
+7 days
+```
+
+---
+
+# JWT vs Session Authentication
+
+| JWT | Session |
+|------|---------|
+| Stateless | Stateful |
+| Server stores no session | Server stores session |
+| Easy to scale | Harder to scale |
+| Best for APIs | Best for traditional web apps |
+| Token stored by client | Session ID stored in cookie |
+
+---
+
+# Advantages of JWT
+
+- Stateless authentication
+- Highly scalable
+- Compact and lightweight
+- Easy to use with REST APIs
+- Supports microservices
+- Cross-platform
+- Reduces database lookups for authentication
+
+---
+
+# Disadvantages of JWT
+
+- Difficult to revoke before expiration without additional infrastructure
+- Larger than simple session IDs
+- Payload is readable (not encrypted)
+- Requires careful token expiration management
+- Compromised tokens remain valid until they expire unless a revocation strategy exists
+
+---
+
+# Best Practices
+
+✅ Always use HTTPS.
+
+✅ Keep access tokens short-lived.
+
+✅ Use refresh tokens.
+
+✅ Never store passwords in JWT.
+
+✅ Validate signatures on every request.
+
+✅ Verify expiration (`exp`).
+
+✅ Use strong secret keys (or asymmetric keys like RSA/ECDSA).
+
+✅ Prefer HttpOnly Secure Cookies for browser-based applications.
+
+---
+
+# Common HTTP Response
+
+Valid Token
+
+```
+200 OK
+```
+
+Expired Token
+
+```
+401 Unauthorized
+```
+
+Invalid Signature
+
+```
+401 Unauthorized
+```
+
+No Token
+
+```
+401 Unauthorized
+```
+
+---
+
+# Spring Boot JWT Flow
+
+```
+Client
+
+↓
+
+POST /login
+
+↓
+
+Spring Security
+
+↓
+
+Authentication Manager
+
+↓
+
+UserDetailsService
+
+↓
+
+Database
+
+↓
+
+Validate Credentials
+
+↓
+
+Generate JWT
+
+↓
+
+Return JWT
+
+↓
+
+Client Stores JWT
+
+↓
+
+Every Request
+
+Authorization: Bearer JWT
+
+↓
+
+JWT Filter
+
+↓
+
+Validate Token
+
+↓
+
+Access Protected APIs
+```
+
+---
+
+# Frequently Asked Interview Questions
+
+## What is JWT?
+
+JWT (JSON Web Token) is a compact, URL-safe token used for authentication and authorization. It securely carries user information between the client and server.
+
+---
+
+## Why is JWT Stateless?
+
+Because the server does not store user session information. Every request includes the token, allowing the server to authenticate the user independently.
+
+---
+
+## What are the three parts of JWT?
+
+1. Header
+2. Payload
+3. Signature
+
+---
+
+## Is JWT Encrypted?
+
+No.
+
+JWT is **Base64URL encoded**, not encrypted by default.
+
+Anyone can decode the header and payload.
+
+Only the signature prevents tampering.
+
+---
+
+## What is the Signature Used For?
+
+To verify that the token has not been modified and was signed by a trusted issuer.
+
+---
+
+## Why Should JWT Expire?
+
+To reduce the risk of misuse if a token is stolen.
+
+---
+
+## Difference Between Authentication and Authorization
+
+| Authentication | Authorization |
+|---------------|---------------|
+| Verifies identity | Determines permissions |
+| Login | Access control |
+| "Who are you?" | "What can you do?" |
+
+---
+
+## Difference Between Access Token and Refresh Token
+
+| Access Token | Refresh Token |
+|--------------|---------------|
+| Short-lived | Long-lived |
+| Access APIs | Obtain new access tokens |
+| Sent with each request | Used only during token renewal |
+
+---
+
+# 2-Minute Interview Summary
+
+> JWT (JSON Web Token) is an open standard used for secure authentication and authorization. After a user logs in successfully, the server generates a signed JWT containing user-related claims such as the user ID and role. The client stores the token and sends it with each request in the `Authorization: Bearer <token>` header. The server verifies the token's signature and expiration before granting access. A JWT consists of three parts: Header, Payload, and Signature. Because JWT is stateless, the server does not maintain session data, making it highly scalable and ideal for REST APIs and microservices. For security, JWTs should be transmitted over HTTPS, have short expiration times, and avoid storing sensitive information in the payload.
